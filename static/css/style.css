@@ -84,3 +84,6 @@ header h1 a{text-decoration:none;color:inherit}
 header h1 a:hover{color:inherit}
 button.envoi{border:0;color:inherit;font:inherit;letter-spacing:.06em;cursor:pointer}
 .contact .meta a{white-space:nowrap;display:inline-block;font-size:min(1em,4.4vw)}
+.contact .erreur{color:#ff9b9b;margin:1rem 0 0}
+.commentaires{max-width:calc(var(--u)*60);margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--mousse)}
+.commentaires h3{font:400 1.5em/1.2 var(--sans);margin:0 0 1rem}

@@ -5,7 +5,7 @@ Site statique bilingue (français / anglais). Aucune dépendance : seul Node.js 
 ## Structure
 
 ```
-config.json            adresse e-mail de contact (et URL du site, une fois connue)
+config.json            e-mail de contact, URL du site, clés Web3Forms et Cusdis
 build.js               génère le site dans dist/ (à lire si vous voulez changer les gabarits)
 netlify.toml           dit à Netlify de lancer "node build.js" et de publier dist/
 content/
@@ -55,13 +55,33 @@ npx serve dist
 3. À chaque `git push`, Netlify régénère et publie le site tout seul.
 4. Domaine : *Domain management* → *Add a domain*. Une fois l’adresse connue, mettez-la dans `config.json` (`"url": "https://…"`) : elle sert à l’aperçu des liens partagés.
 
+## Passer de Netlify à Cloudflare Pages (gratuit, sans badge)
+
+Le site fonctionne tel quel chez Cloudflare. Avant de changer, remplissez `web3forms` dans `config.json` (voir plus bas) : Netlify Forms ne marche que chez Netlify.
+
+1. Créez un compte sur dash.cloudflare.com → *Workers & Pages* → *Create* → *Pages* → *Connect to Git* → choisissez le dépôt.
+2. Réglages : *Build command* `node build.js`, *Build output directory* `dist`, variable d’environnement `NODE_VERSION` = `20`.
+3. Lancez le déploiement : le site est en ligne sur une adresse en `.pages.dev`. Comme chez Netlify, chaque `git push` le met à jour.
+4. Testez toutes les pages et le formulaire, puis seulement alors supprimez le site dans Netlify.
+
 ## Formulaire de contact
 
-Le formulaire utilise Netlify Forms (rien à installer). Après le premier déploiement, dans Netlify :
+**Avec Web3Forms (marche chez n’importe quel hébergeur)** : sur web3forms.com, entrez `sorcieresmortelles@gmail.com` et recevez une clé par mail. Collez-la dans `config.json` (`"web3forms": "votre-clé"`) et envoyez sur GitHub. Les messages arrivent directement dans la boîte Gmail.
+
+**Sans clé**, le formulaire utilise Netlify Forms (rien à installer). Après le premier déploiement, dans Netlify :
 1. Onglet *Forms* → *Enable form detection*, puis redéployez (*Deploys* → *Trigger deploy*) pour que le formulaire « contact » soit détecté.
 2. Pour recevoir les messages par mail :
 *Project configuration* → *Notifications* → *Form submission notifications* → *Add notification* → *Email notification*, avec `sorcieresmortelles@gmail.com`. Les messages sont aussi visibles dans l’onglet *Forms*.
 Testez en envoyant un message depuis le site en ligne. Pensez à vérifier le dossier spam de la boîte Gmail la première fois.
+
+## Commentaires
+
+Les interviews et articles peuvent recevoir des commentaires, sans compte pour les lecteurs, grâce à Cusdis.
+1. Créez un compte sur cusdis.com, puis ajoutez un site (*New website*).
+2. Copiez son *App ID* dans `config.json` (`"cusdis": "…"`) et envoyez sur GitHub : un bloc « Commentaires » apparaît en bas de chaque publication.
+3. Chaque nouveau commentaire attend votre validation dans le tableau de bord Cusdis, et vous pouvez être prévenu par mail (réglage dans Cusdis).
+
+Laissez `"cusdis": ""` pour retirer les commentaires.
 
 ## Modifier le design
 

@@ -100,6 +100,16 @@ ${main}
 </html>
 `;
 }
+// Commentaires (Cusdis) : affichés seulement si "cusdis" est rempli dans config.json.
+// Le module est chargé par js/main.js, dans la langue choisie par le visiteur.
+function commentaires(p) {
+  if (!CFG.cusdis) return "";
+  return `<section class="commentaires">
+<h3>${bi("Commentaires", "Comments")}</h3>
+<div id="cusdis_thread" data-host="https://cusdis.com" data-app-id="${esc(CFG.cusdis)}" data-page-id="${p.type}/${p.slug}" data-page-url="${esc((CFG.url || "") + url(p))}" data-page-title="${esc(p.fr.titre)}" data-theme="dark"></div>
+</section>
+`;
+}
 function ecrire(rel, html) { const f = path.join(OUT, rel); fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, html); }
 
 // ---------- pages ----------
@@ -147,27 +157,38 @@ ${li ? `<ul class="liste">\n${li}\n</ul>` : `<p>${bi("Les premières publication
 <p class="meta">${meta(p)}</p>
 ${img}${biDiv(cFr, cEn)}
 </div>
-</article>`
+${commentaires(p)}</article>`
     }));
   }
 }
 
-// Contact (formulaire Netlify Forms) + page de remerciement + 404
+// Contact + page de remerciement + 404
+// Le formulaire passe par Web3Forms si "web3forms" est rempli dans config.json
+// (fonctionne chez n'importe quel hébergeur), sinon par Netlify Forms.
 const mail = esc(CFG.email);
+const SUJET = "Nouveau message - Sorcières Mortelles";
+const formulaire = CFG.web3forms
+  ? `<form method="POST" action="https://api.web3forms.com/submit" data-web3forms>
+<input type="hidden" name="access_key" value="${esc(CFG.web3forms)}">
+<input type="hidden" name="subject" value="${SUJET}">
+<input type="hidden" name="from_name" value="${NOM}">
+${CFG.url ? `<input type="hidden" name="redirect" value="${esc(CFG.url)}/merci/">\n` : ""}<input type="checkbox" name="botcheck" hidden style="display:none">`
+  : `<form name="contact" method="POST" action="/merci/" data-netlify="true" netlify-honeypot="bot-field">
+<input type="hidden" name="form-name" value="contact">
+<input type="hidden" name="subject" value="${SUJET}">
+<p hidden><label>Ne pas remplir : <input name="bot-field"></label></p>`;
 ecrire("contact/index.html", layout({
   titre: ["Contact", "Contact"], nav: "contact", cls: "seul",
   main: `<section class="panneau">
 <h2 class="page-titre">Contact</h2>
 <div class="contact">
 <p>${bi("Une question, une proposition, un texte à partager : écrivez-nous.", "A question, a proposal, a text to share: write to us.")}</p>
-<form name="contact" method="POST" action="/merci/" data-netlify="true" netlify-honeypot="bot-field">
-<input type="hidden" name="form-name" value="contact">
-<input type="hidden" name="subject" value="Nouveau message - Sorcières Mortelles">
-<p hidden><label>Ne pas remplir : <input name="bot-field"></label></p>
+${formulaire}
 <label>${bi("Votre nom", "Your name")}<input name="nom" autocomplete="name" required></label>
 <label>${bi("Votre adresse e-mail", "Your e-mail address")}<input name="email" type="email" autocomplete="email" required></label>
 <label>${bi("Votre message", "Your message")}<textarea name="message" required></textarea></label>
 <button type="submit" class="envoi">${bi("Envoyer", "Send")}</button>
+<p class="erreur" role="alert" hidden>${bi("L’envoi n’a pas fonctionné. Réessayez, ou écrivez-nous directement à l’adresse ci-dessous.", "Sending failed. Please try again, or write to us directly at the address below.")}</p>
 </form>
 <p class="meta">${bi("Ou écrivez directement à", "Or write directly to")} <a href="mailto:${mail}">${mail}</a></p>
 </div>
