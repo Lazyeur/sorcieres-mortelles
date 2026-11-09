@@ -162,6 +162,7 @@ ecrire("contact/index.html", layout({
 <p>${bi("Une question, une proposition, un texte à partager : écrivez-nous.", "A question, a proposal, a text to share: write to us.")}</p>
 <form name="contact" method="POST" action="/merci/" data-netlify="true" netlify-honeypot="bot-field">
 <input type="hidden" name="form-name" value="contact">
+<input type="hidden" name="subject" value="Nouveau message - Sorcières Mortelles">
 <p hidden><label>Ne pas remplir : <input name="bot-field"></label></p>
 <label>${bi("Votre nom", "Your name")}<input name="nom" autocomplete="name" required></label>
 <label>${bi("Votre adresse e-mail", "Your e-mail address")}<input name="email" type="email" autocomplete="email" required></label>

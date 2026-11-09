@@ -57,7 +57,9 @@ npx serve dist
 
 ## Formulaire de contact
 
-Le formulaire utilise Netlify Forms (rien à installer). Après le premier déploiement :
+Le formulaire utilise Netlify Forms (rien à installer). Après le premier déploiement, dans Netlify :
+1. Onglet *Forms* → *Enable form detection*, puis redéployez (*Deploys* → *Trigger deploy*) pour que le formulaire « contact » soit détecté.
+2. Pour recevoir les messages par mail :
 *Project configuration* → *Notifications* → *Form submission notifications* → *Add notification* → *Email notification*, avec `sorcieresmortelles@gmail.com`. Les messages sont aussi visibles dans l’onglet *Forms*.
 Testez en envoyant un message depuis le site en ligne. Pensez à vérifier le dossier spam de la boîte Gmail la première fois.
 
