@@ -90,7 +90,7 @@ ${CFG.url ? `<meta property="og:image" content="${CFG.url}/img/maluha.png">\n` :
 <img alt="Maluha" src="/img/maluha.png">
 <h1><a href="/">SORCIÈRES MORTELLES</a></h1>
 </header>
-<nav id="menu" data-aria-fr="Navigation principale" data-aria-en="Main navigation">${lien("/interview/", "interview", "INTERVIEW")}${lien("/article/", "article", "ARTICLE")}${lien("/contact/", "contact", "CONTACT")}<div class="langues" role="group" id="langues"><button type="button" data-lang-btn="fr" lang="fr" title="Français">FR</button><span aria-hidden="true">/</span><button type="button" data-lang-btn="en" lang="en" title="English">EN</button></div></nav>
+<nav id="menu" data-aria-fr="Navigation principale" data-aria-en="Main navigation">${lien("/", "accueil", bi("ACCUEIL", "HOME"))}${lien("/interview/", "interview", "INTERVIEW")}${lien("/article/", "article", "ARTICLE")}${lien("/contact/", "contact", "CONTACT")}<div class="langues" role="group" id="langues"><button type="button" data-lang-btn="fr" lang="fr" title="Français">FR</button><span aria-hidden="true">/</span><button type="button" data-lang-btn="en" lang="en" title="English">EN</button></div></nav>
 <main class="${cls}">
 ${main}
 </main>
@@ -109,6 +109,7 @@ fs.cpSync(path.join(ROOT, "static"), OUT, { recursive: true });
 // Accueil
 const news = tous.slice(0, 5).map(p => `<li><a href="${url(p)}">${bi(esc(p.fr.titre), esc(tEn(p).titre))}</a><br><span class="ph">${meta(p)}</span></li>`).join("\n");
 ecrire("index.html", layout({
+  nav: "accueil",
   main: `<section class="accueil">
 <h2>${bi("Toustes des Sorcières, Toustes des Artistes", "All of Us Witches, All of Us Artists")}</h2>
 <p>${bi("Dans ces bois vous trouverez l’art beau, l’art perdu, l’art qui vous trouve, l’art qui dérange, l’art qui questionne, l’art qui répond, l’art qui frissonne, l’art qui explose, l’art pour les humains, et les autres.",

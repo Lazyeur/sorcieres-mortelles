@@ -22,7 +22,7 @@ a:focus-visible{outline:2px solid var(--menthe);outline-offset:-4px}
 header{display:flex;align-items:center;height:calc(var(--u)*14.2);overflow:hidden;background:var(--fond)}
 header img{height:100%;width:auto;align-self:flex-end;margin-left:5.5%;flex:none}
 header h1{flex:1;margin:0 4.3% 0 1.3%;text-align:center;white-space:nowrap;font:400 calc(var(--u)*6.6)/1 "Blackwood Castle","Times New Roman",serif;color:var(--texte)}
-nav{display:grid;grid-template-columns:repeat(3,1fr) auto;background:var(--mousse)}
+nav{display:grid;grid-template-columns:repeat(4,1fr) auto;background:var(--mousse)}
 nav a{display:block;text-align:center;text-decoration:none;padding:calc(var(--u)*1.3) 0;font-size:max(1rem,calc(var(--u)*2.1));letter-spacing:.06em;border-right:1px solid var(--fond)}
 .langues{display:flex;align-items:center;justify-content:center;gap:.25em;padding:0 calc(var(--u)*1.8);font-size:max(.85rem,calc(var(--u)*1.6));letter-spacing:.04em}
 .langues button{background:none;border:0;margin:0;color:inherit;font:inherit;letter-spacing:inherit;cursor:pointer;padding:.35em .25em;opacity:.6}
