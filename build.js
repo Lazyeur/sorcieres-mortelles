@@ -90,7 +90,7 @@ ${CFG.url ? `<meta property="og:image" content="${CFG.url}/img/maluha.png">\n` :
 <img alt="Maluha" src="/img/maluha.png">
 <h1><a href="/">SORCIÈRES MORTELLES</a></h1>
 </header>
-<nav id="menu" data-aria-fr="Navigation principale" data-aria-en="Main navigation">${lien("/", "accueil", bi("ACCUEIL", "HOME"))}${lien("/interview/", "interview", "INTERVIEW")}${lien("/article/", "article", "ARTICLE")}${lien("/contact/", "contact", "CONTACT")}<div class="langues" role="group" id="langues"><button type="button" data-lang-btn="fr" lang="fr" title="Français">FR</button><span aria-hidden="true">/</span><button type="button" data-lang-btn="en" lang="en" title="English">EN</button></div></nav>
+<nav id="menu" data-aria-fr="Navigation principale" data-aria-en="Main navigation">${lien("/", "accueil", bi("ACCUEIL", "HOME"))}${lien("/interview/", "interview", "INTERVIEWS")}${lien("/article/", "article", "ARTICLES")}${lien("/contact/", "contact", "CONTACT")}<div class="langues" role="group" id="langues"><button type="button" data-lang-btn="fr" lang="fr" title="Français">FR</button><span aria-hidden="true">/</span><button type="button" data-lang-btn="en" lang="en" title="English">EN</button></div></nav>
 <main class="${cls}">
 ${main}
 </main>

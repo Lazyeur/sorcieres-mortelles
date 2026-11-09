@@ -83,4 +83,4 @@ html[lang="fr"] [data-l="en"],html[lang="en"] [data-l="fr"]{display:none!importa
 header h1 a{text-decoration:none;color:inherit}
 header h1 a:hover{color:inherit}
 button.envoi{border:0;color:inherit;font:inherit;letter-spacing:.06em;cursor:pointer}
-.contact .meta a{word-break:break-all}
+.contact .meta a{white-space:nowrap;display:inline-block;font-size:min(1em,4.4vw)}
