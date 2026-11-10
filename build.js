@@ -1,5 +1,5 @@
 // build.js : génère le site statique dans dist/ à partir du dossier content/.
-// Aucune dépendance. Netlify le lance à chaque mise en ligne ("node build.js").
+// Aucune dépendance. Cloudflare Pages le lance à chaque mise en ligne ("node build.js").
 const fs = require("fs"), path = require("path");
 const ROOT = __dirname, OUT = path.join(ROOT, "dist");
 const CFG = JSON.parse(fs.readFileSync(path.join(ROOT, "config.json"), "utf8"));
@@ -193,20 +193,14 @@ ${commentaires(p)}</article>`
 }
 
 // Contact + page de remerciement + 404
-// Le formulaire passe par Web3Forms si "web3forms" est rempli dans config.json
-// (fonctionne chez n'importe quel hébergeur), sinon par Netlify Forms.
+// Le formulaire passe par Web3Forms (clé "web3forms" dans config.json).
 const mail = esc(CFG.email);
 const SUJET = "Nouveau message - Sorcières Mortelles";
-const formulaire = CFG.web3forms
-  ? `<form method="POST" action="https://api.web3forms.com/submit" data-web3forms>
+const formulaire = `<form method="POST" action="https://api.web3forms.com/submit" data-web3forms>
 <input type="hidden" name="access_key" value="${esc(CFG.web3forms)}">
 <input type="hidden" name="subject" value="${SUJET}">
 <input type="hidden" name="from_name" value="${NOM}">
-${CFG.url ? `<input type="hidden" name="redirect" value="${esc(CFG.url)}/merci/">\n` : ""}<input type="checkbox" name="botcheck" hidden style="display:none">`
-  : `<form name="contact" method="POST" action="/merci/" data-netlify="true" netlify-honeypot="bot-field">
-<input type="hidden" name="form-name" value="contact">
-<input type="hidden" name="subject" value="${SUJET}">
-<p hidden><label>Ne pas remplir : <input name="bot-field"></label></p>`;
+${CFG.url ? `<input type="hidden" name="redirect" value="${esc(CFG.url)}/merci/">\n` : ""}<input type="checkbox" name="botcheck" hidden style="display:none">`;
 ecrire("contact/index.html", layout({
   titre: ["Contact", "Contact"], nav: "contact", cls: "seul",
   main: `<section class="panneau">

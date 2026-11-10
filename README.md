@@ -7,7 +7,6 @@ Site statique bilingue (français / anglais). Aucune dépendance : seul Node.js 
 ```
 config.json            e-mail de contact, URL du site, clés Web3Forms et Cusdis
 build.js               génère le site dans dist/ (à lire si vous voulez changer les gabarits)
-netlify.toml           dit à Netlify de lancer "node build.js" et de publier dist/
 content/
   interviews/          une interview = un fichier .md
   articles/            un article = un fichier .md
@@ -48,31 +47,17 @@ node build.js
 npx serve dist
 ```
 
-## Mise en ligne : GitHub + Netlify
+## Mise en ligne : GitHub + Cloudflare Pages
 
-1. Créez un dépôt GitHub (privé ou public) et envoyez-y le contenu de ce dossier.
-2. Sur Netlify : *Add new project* → *Import an existing project* → GitHub → choisissez le dépôt. Netlify lit `netlify.toml` : rien à régler. Lancez le déploiement.
-3. À chaque `git push`, Netlify régénère et publie le site tout seul.
-4. Domaine : *Domain management* → *Add a domain*. Une fois l’adresse connue, mettez-la dans `config.json` (`"url": "https://…"`) : elle sert à l’aperçu des liens partagés.
+Le site est publié par Cloudflare Pages (projet `sorcieres-mortelles`, gratuit) sur https://sorcieres-mortelles.fr. À chaque `git push` sur GitHub, Cloudflare régénère et publie le site tout seul en une à deux minutes.
 
-## Passer de Netlify à Cloudflare Pages (gratuit, sans badge)
-
-Le site fonctionne tel quel chez Cloudflare. Avant de changer, remplissez `web3forms` dans `config.json` (voir plus bas) : Netlify Forms ne marche que chez Netlify.
-
-1. Créez un compte sur dash.cloudflare.com → *Workers & Pages* → *Create* → *Pages* → *Connect to Git* → choisissez le dépôt.
-2. Réglages : *Build command* `node build.js`, *Build output directory* `dist`, variable d’environnement `NODE_VERSION` = `20`.
-3. Lancez le déploiement : le site est en ligne sur une adresse en `.pages.dev`. Comme chez Netlify, chaque `git push` le met à jour.
-4. Testez toutes les pages et le formulaire, puis seulement alors supprimez le site dans Netlify.
+- Réglages du projet (Workers & Pages → sorcieres-mortelles → Settings) : *Build command* `node build.js`, *Build output directory* `dist`, variable d’environnement `NODE_VERSION` = `20`.
+- Domaine : acheté chez OVH, mais ses DNS sont gérés par Cloudflare (Domains → sorcieres-mortelles.fr → DNS). Les lignes MX et TXT servent aux mails OVH et à Brevo : ne pas les supprimer.
+- Statistiques de visite : Workers & Pages → sorcieres-mortelles → Metrics → Web Analytics.
 
 ## Formulaire de contact
 
-**Avec Web3Forms (marche chez n’importe quel hébergeur)** : sur web3forms.com, entrez `sorcieresmortelles@gmail.com` et recevez une clé par mail. Collez-la dans `config.json` (`"web3forms": "votre-clé"`) et envoyez sur GitHub. Les messages arrivent directement dans la boîte Gmail.
-
-**Sans clé**, le formulaire utilise Netlify Forms (rien à installer). Après le premier déploiement, dans Netlify :
-1. Onglet *Forms* → *Enable form detection*, puis redéployez (*Deploys* → *Trigger deploy*) pour que le formulaire « contact » soit détecté.
-2. Pour recevoir les messages par mail :
-*Project configuration* → *Notifications* → *Form submission notifications* → *Add notification* → *Email notification*, avec `sorcieresmortelles@gmail.com`. Les messages sont aussi visibles dans l’onglet *Forms*.
-Testez en envoyant un message depuis le site en ligne. Pensez à vérifier le dossier spam de la boîte Gmail la première fois.
+Le formulaire passe par Web3Forms : les messages arrivent directement dans la boîte `sorcieresmortelles@gmail.com` (vérifier les spams en cas de doute). La clé est dans `config.json` (`"web3forms"`) ; pour en changer, en demander une nouvelle sur web3forms.com.
 
 ## Lettre magique (newsletter Brevo)
 
