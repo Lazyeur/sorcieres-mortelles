@@ -90,17 +90,17 @@ button.envoi{border:0;color:inherit;font:inherit;letter-spacing:.06em;cursor:poi
 
 /* ---------- Lettre magique (newsletter) ---------- */
 .vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.lettre{position:fixed;z-index:50;right:max(.75rem,env(safe-area-inset-right,0px));bottom:max(.75rem,env(safe-area-inset-bottom,0px));width:78px;display:block;animation:flotte 6s ease-in-out infinite}
-.lettre::before{content:"";position:absolute;inset:-22%;z-index:-1;border-radius:50%;background:radial-gradient(circle,rgba(70,212,167,.55) 0%,rgba(56,160,220,.28) 42%,transparent 70%);filter:blur(10px);animation:lueur 4s ease-in-out infinite}
-.lettre img{display:block;width:100%;height:auto;filter:drop-shadow(0 0 6px rgba(70,212,167,.55));transition:transform .3s ease}
+.lettre{position:fixed;z-index:50;top:calc(50% - 50px);right:max(.75rem,env(safe-area-inset-right,0px));width:100px;display:block;animation:flotte 6s ease-in-out infinite}
+.lettre::before{content:"";position:absolute;inset:-22%;z-index:-1;border-radius:50%;background:radial-gradient(circle,rgba(70,212,167,.32) 0%,rgba(56,160,220,.15) 42%,transparent 70%);filter:blur(12px);animation:lueur 4s ease-in-out infinite}
+.lettre img{display:block;width:100%;height:auto;filter:drop-shadow(0 0 6px rgba(70,212,167,.35));transition:transform .3s ease}
 .lettre:hover img,.lettre:focus-visible img{transform:scale(1.08) rotate(-3deg)}
 .lettre:hover::before,.lettre:focus-visible::before{animation-duration:1.6s}
 .lettre:focus-visible{outline:none}
 .lettre:focus-visible img{outline:2px solid var(--menthe);outline-offset:4px;border-radius:8px}
 @keyframes flotte{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-10px) rotate(2deg)}}
-@keyframes lueur{0%,100%{opacity:.65;transform:scale(.95)}50%{opacity:1;transform:scale(1.08)}}
+@keyframes lueur{0%,100%{opacity:.55;transform:scale(.96)}50%{opacity:.9;transform:scale(1.05)}}
 /* grands écrans : la lettre flotte dans la marge droite, à mi-hauteur */
-@media (min-width:1600px){.lettre{width:150px;bottom:auto;top:calc(50% - 75px);right:calc((100vw - 1250px)/4 - 75px)}}
+@media (min-width:1600px){.lettre{width:150px;top:calc(50% - 75px);right:calc((100vw - 1250px)/4 - 75px)}}
 @media (prefers-reduced-motion:reduce){.lettre,.lettre::before{animation:none}.lettre img{transition:none}}
 @media print{.lettre{display:none}}
 
@@ -113,8 +113,10 @@ button.envoi{border:0;color:inherit;font:inherit;letter-spacing:.06em;cursor:poi
 .nl-fermer:hover{opacity:1;color:var(--menthe)}
 .nl-fermer:focus-visible{outline:2px solid var(--menthe)}
 .nl-image{display:block;width:96px;height:auto;margin:0 auto 1rem;filter:drop-shadow(0 0 10px rgba(70,212,167,.5))}
-.nl-dialog .page-titre,.nl-page .page-titre{text-align:center}
-.nl-page{max-width:calc(var(--u)*50);margin:0 auto}
+.nl-dialog .page-titre{text-align:center}
+.nl-page{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:calc(var(--u)*5);align-items:center;max-width:calc(var(--u)*82)}
+.nl-dessin{display:block;width:clamp(170px,22vw,270px);height:auto;filter:drop-shadow(0 0 12px rgba(70,212,167,.3));animation:flotte 6s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.nl-dessin{animation:none}}
 .nl-form label{display:block;margin:0 0 1.1rem}
 .nl-form input[type=email]{display:block;width:100%;margin-top:.3rem;background:var(--fond);color:var(--texte);border:1px solid var(--mousse);padding:.6rem;font:inherit}
 .nl-form input[type=email]:focus-visible{outline:2px solid var(--menthe)}
@@ -122,4 +124,4 @@ button.envoi{border:0;color:inherit;font:inherit;letter-spacing:.06em;cursor:poi
 .nl-form .erreur{color:#ff9b9b;margin:1rem 0 0}
 .nl-ok{color:var(--menthe)}
 .nl-dialog .meta,.nl-page .meta{margin-top:1.2rem}
-@media (max-width:700px){.lettre{width:64px}.page{padding-bottom:5rem}}
+@media (max-width:700px){.lettre{width:64px;top:auto;bottom:max(.75rem,env(safe-area-inset-bottom,0px))}.page{padding-bottom:5rem}.nl-page{grid-template-columns:1fr;gap:1rem}.nl-dessin{order:-1;width:130px;margin:0 auto}}

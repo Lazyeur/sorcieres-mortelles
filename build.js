@@ -4,6 +4,10 @@ const fs = require("fs"), path = require("path");
 const ROOT = __dirname, OUT = path.join(ROOT, "dist");
 const CFG = JSON.parse(fs.readFileSync(path.join(ROOT, "config.json"), "utf8"));
 const NOM = "Sorcières Mortelles";
+// Empreinte des fichiers CSS et JS, ajoutée à leur adresse (?v=…) : après chaque mise en ligne,
+// les navigateurs prennent la nouvelle version au lieu de leur ancienne copie en cache.
+const empreinte = rel => require("crypto").createHash("md5").update(fs.readFileSync(path.join(ROOT, "static", rel))).digest("hex").slice(0, 8);
+const V = { css: empreinte("css/style.css"), js: empreinte("js/main.js") };
 
 const TYPES = {
   interview: { dir: "interviews", fr: "Interviews", en: "Interviews", retFr: "← Toutes les interviews", retEn: "← All interviews" },
@@ -75,7 +79,7 @@ const formNewsletter = () => `<form class="nl-form" method="POST" action="${esc(
 <label>${bi("Votre adresse e-mail", "Your e-mail address")}<input name="EMAIL" type="email" autocomplete="email" required></label>
 <input type="hidden" name="LANGUE" value="FR">
 <input type="hidden" name="locale" value="fr">
-<input type="text" name="email_address_check" value="" tabindex="-1" autocomplete="off" aria-hidden="true" class="nl-piege">
+<div class="nl-piege" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden"><input type="text" name="email_address_check" value="" tabindex="-1" autocomplete="off"></div>
 <button type="submit" class="envoi">${bi("Recevoir la lettre", "Get the letter")}</button>
 <p class="erreur" role="alert" hidden>${bi("L’inscription n’a pas fonctionné. Réessayez dans un instant.", "Sign-up failed. Please try again in a moment.")}</p>
 </form>
@@ -107,7 +111,7 @@ function layout({ titre, desc, nav, main, cls = "" }) {
 <meta property="og:title" content="${t1}">
 <meta property="og:description" content="${d}">
 ${CFG.url ? `<meta property="og:image" content="${CFG.url}/img/maluha.png">\n` : ""}<link rel="icon" href="/img/maluha.png">
-<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/style.css?v=${V.css}">
 <script>try{if(localStorage.getItem("sm-lang")==="en")document.documentElement.lang="en"}catch(e){}</script>
 </head>
 <body data-t-fr="${t1}" data-t-en="${t2}">
@@ -121,7 +125,7 @@ ${CFG.url ? `<meta property="og:image" content="${CFG.url}/img/maluha.png">\n` :
 ${main}
 </main>
 </div>
-${NL && nav !== "newsletter" ? lettreFlottante() : ""}<script src="/js/main.js"></script>
+${NL && nav !== "newsletter" ? lettreFlottante() : ""}<script src="/js/main.js?v=${V.js}"></script>
 </body>
 </html>
 `;
@@ -231,10 +235,12 @@ if (NL) {
   ecrire("newsletter/index.html", layout({ titre: ["La lettre magique", "The magic letter"], nav: "newsletter", cls: "seul",
     main: `<section class="panneau">
 <div class="nl-page">
-<img class="nl-image" src="/img/lettre-magique.png" alt="">
+<div class="nl-texte">
 <h2 class="page-titre">${bi("La lettre magique", "The magic letter")}</h2>
 <p>${introNewsletter}</p>
 ${formNewsletter()}
+</div>
+<img class="nl-dessin" src="/img/lettre-magique.png" alt="">
 </div>
 </section>` }));
   ecrire("newsletter/verifiez/index.html", layout({ titre: ["Vérifiez votre boîte mail", "Check your inbox"], nav: "newsletter", cls: "seul",
