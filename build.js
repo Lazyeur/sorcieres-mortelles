@@ -68,6 +68,31 @@ const tEn = p => (p.en || p.fr);
 const meta = p => (p.artiste ? esc(p.artiste) + " – " : "") + bi(dateTxt(p.date, "fr"), dateTxt(p.date, "en"));
 
 // ---------- gabarit commun ----------
+// ---------- lettre magique (newsletter Brevo) ----------
+// Tout ce bloc n'apparaît que si "brevo" (adresse du formulaire Brevo) est rempli dans config.json.
+const NL = !!CFG.brevo;
+const formNewsletter = () => `<form class="nl-form" method="POST" action="${esc(CFG.brevo)}" data-brevo>
+<label>${bi("Votre adresse e-mail", "Your e-mail address")}<input name="EMAIL" type="email" autocomplete="email" required></label>
+<input type="hidden" name="LANGUE" value="FR">
+<input type="hidden" name="locale" value="fr">
+<input type="text" name="email_address_check" value="" tabindex="-1" autocomplete="off" aria-hidden="true" class="nl-piege">
+<button type="submit" class="envoi">${bi("Recevoir la lettre", "Get the letter")}</button>
+<p class="erreur" role="alert" hidden>${bi("L’inscription n’a pas fonctionné. Réessayez dans un instant.", "Sign-up failed. Please try again in a moment.")}</p>
+</form>
+<p class="nl-ok" role="status" hidden>${bi("Presque fini ! Un mail vient de partir : cliquez sur le lien qu’il contient pour confirmer votre inscription.", "Almost done! We just sent you an e-mail: click the link inside to confirm your subscription.")}</p>
+<p class="meta">${bi("Une lettre à chaque nouvelle interview ou nouvel article, rien d’autre. Désinscription en un clic depuis chaque mail.", "One letter for each new interview or article, nothing else. Unsubscribe in one click from any e-mail.")}</p>`;
+const introNewsletter = bi("Recevez la lettre magique : un mail à chaque nouvelle publication.", "Receive the magic letter: an e-mail for each new publication.");
+const lienNewsletter = () => NL ? `<p class="nl-lien"><a href="/newsletter/" data-newsletter>✉ ${bi("Recevoir la lettre magique", "Get the magic letter")}</a></p>\n` : "";
+const lettreFlottante = () => `<a class="lettre" href="/newsletter/" data-newsletter><img src="/img/lettre-magique.png" alt="" width="360" height="360"><span class="vh">${bi("S’inscrire à la lettre magique", "Subscribe to the magic letter")}</span></a>
+<dialog id="newsletter" class="nl-dialog" aria-labelledby="nl-titre">
+<button type="button" class="nl-fermer" data-fermer>✕<span class="vh">${bi("Fermer", "Close")}</span></button>
+<img class="nl-image" src="/img/lettre-magique.png" alt="">
+<h2 id="nl-titre" class="page-titre">${bi("La lettre magique", "The magic letter")}</h2>
+<p>${introNewsletter}</p>
+${formNewsletter()}
+</dialog>
+`;
+
 function layout({ titre, desc, nav, main, cls = "" }) {
   const t1 = titre ? `${esc(titre[0])} · ${NOM}` : NOM, t2 = titre ? `${esc(titre[1])} · ${NOM}` : NOM;
   const lien = (h, id, l) => `<a href="${h}"${nav === id ? ' aria-current="page"' : ""}>${l}</a>`;
@@ -96,7 +121,7 @@ ${CFG.url ? `<meta property="og:image" content="${CFG.url}/img/maluha.png">\n` :
 ${main}
 </main>
 </div>
-<script src="/js/main.js"></script>
+${NL && nav !== "newsletter" ? lettreFlottante() : ""}<script src="/js/main.js"></script>
 </body>
 </html>
 `;
@@ -130,7 +155,7 @@ ecrire("index.html", layout({
 <aside>
 <h2>${bi("Nouveautés", "What’s New")}</h2>
 ${news ? `<ul>\n${news}\n</ul>` : ""}
-</aside>`
+${lienNewsletter()}</aside>`
 }));
 
 // Listes et fiches
@@ -157,7 +182,7 @@ ${li ? `<ul class="liste">\n${li}\n</ul>` : `<p>${bi("Les premières publication
 <h2 class="page-titre">${bi(esc(p.fr.titre), esc(tEn(p).titre))}</h2>
 <p class="meta">${meta(p)}</p>
 ${img}${biDiv(cFr, cEn)}
-</div>
+${lienNewsletter()}</div>
 ${commentaires(p)}</article>`
     }));
   }
@@ -202,6 +227,21 @@ const simple = (fr, en, pfr, pen) => `<section class="panneau">
 </section>`;
 ecrire("merci/index.html", layout({ titre: ["Merci", "Thank you"], cls: "seul",
   main: simple("Merci !", "Thank you!", "Votre message est bien parti. Nous vous répondons dès que possible.", "Your message has been sent. We will reply as soon as possible.") }));
+if (NL) {
+  ecrire("newsletter/index.html", layout({ titre: ["La lettre magique", "The magic letter"], nav: "newsletter", cls: "seul",
+    main: `<section class="panneau">
+<div class="nl-page">
+<img class="nl-image" src="/img/lettre-magique.png" alt="">
+<h2 class="page-titre">${bi("La lettre magique", "The magic letter")}</h2>
+<p>${introNewsletter}</p>
+${formNewsletter()}
+</div>
+</section>` }));
+  ecrire("newsletter/verifiez/index.html", layout({ titre: ["Vérifiez votre boîte mail", "Check your inbox"], nav: "newsletter", cls: "seul",
+    main: simple("Presque fini !", "Almost done!", "Un mail vient de partir : cliquez sur le lien qu’il contient pour confirmer votre inscription. Pensez à regarder dans les spams.", "We just sent you an e-mail: click the link inside to confirm your subscription. Remember to check your spam folder.") }));
+  ecrire("newsletter/confirmee/index.html", layout({ titre: ["Inscription confirmée", "Subscription confirmed"], nav: "newsletter", cls: "seul",
+    main: simple("C’est confirmé !", "Confirmed!", "Bienvenue parmi nous. La lettre magique vous trouvera à chaque nouvelle interview ou nouvel article.", "Welcome among us. The magic letter will find you with each new interview or article.") }));
+}
 ecrire("404.html", layout({ titre: ["Page introuvable", "Page not found"], cls: "seul",
   main: simple("Page introuvable", "Page not found", "Cette page n’existe pas, ou plus.", "This page does not exist, or no longer does.") }));
 

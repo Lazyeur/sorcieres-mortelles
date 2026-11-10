@@ -74,6 +74,14 @@ Le site fonctionne tel quel chez Cloudflare. Avant de changer, remplissez `web3f
 *Project configuration* → *Notifications* → *Form submission notifications* → *Add notification* → *Email notification*, avec `sorcieresmortelles@gmail.com`. Les messages sont aussi visibles dans l’onglet *Forms*.
 Testez en envoyant un message depuis le site en ligne. Pensez à vérifier le dossier spam de la boîte Gmail la première fois.
 
+## Lettre magique (newsletter Brevo)
+
+Une lettre flottante (`static/img/lettre-magique.png`) et le lien « Recevoir la lettre magique » (accueil, bas des publications) ouvrent la fenêtre d’inscription. Les inscrits arrivent dans la liste Brevo « Abonnés », avec leur langue (FR / EN) dans l’attribut `LANGUE`, après avoir confirmé par mail.
+
+- `config.json` → `"brevo"` : l’adresse du formulaire Brevo (Partager → lien du formulaire). Videz-la pour retirer la lettre du site.
+- Pages créées : `/newsletter/` (même formulaire, sans fenêtre), `/newsletter/confirmee/` (après le clic dans le mail de confirmation), `/newsletter/verifiez/`.
+- À chaque nouvelle publication : dans Brevo, *Campagnes* → dupliquer la précédente → changer texte, image et lien → envoyer à la liste « Abonnés ».
+
 ## Commentaires
 
 Les interviews et articles peuvent recevoir des commentaires, sans compte pour les lecteurs, grâce à Cusdis.

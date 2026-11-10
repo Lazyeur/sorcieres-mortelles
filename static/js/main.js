@@ -32,6 +32,36 @@
     });
   }
 
+  // Lettre magique : la lettre flottante et les liens ouvrent la fenêtre d'inscription
+  // (sans JavaScript, ils mènent simplement à la page /newsletter/).
+  var dlg = document.getElementById("newsletter");
+  if (dlg && dlg.showModal) {
+    document.querySelectorAll("[data-newsletter]").forEach(function (a) {
+      a.addEventListener("click", function (e) {
+        e.preventDefault();
+        dlg.showModal();
+        var champ = dlg.querySelector("input[name=EMAIL]");
+        if (champ && !dlg.querySelector(".nl-form").hidden) champ.focus();
+      });
+    });
+    dlg.querySelector("[data-fermer]").addEventListener("click", function () { dlg.close(); });
+    dlg.addEventListener("click", function (e) { if (e.target === dlg) dlg.close(); });
+  }
+  document.querySelectorAll("form[data-brevo]").forEach(function (nf) {
+    if (!window.fetch || !window.FormData) return;
+    nf.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var btn = nf.querySelector("button[type=submit]"), err = nf.querySelector(".erreur"), ok = nf.parentNode.querySelector(".nl-ok");
+      nf.querySelector("input[name=LANGUE]").value = h.lang === "en" ? "EN" : "FR";
+      nf.querySelector("input[name=locale]").value = h.lang === "en" ? "en" : "fr";
+      btn.disabled = true; err.hidden = true;
+      fetch(nf.action, { method: "POST", headers: { Accept: "application/json" }, body: new FormData(nf) })
+        .then(function (r) { return r.json(); })
+        .then(function (d) { if (!d.success) throw new Error(); nf.hidden = true; ok.hidden = false; })
+        .catch(function () { btn.disabled = false; err.hidden = false; });
+    });
+  });
+
   // Commentaires Cusdis : chargés seulement sur les pages qui en ont, dans la langue du visiteur.
   if (document.getElementById("cusdis_thread")) {
     var charger = function (src, ensuite) {
