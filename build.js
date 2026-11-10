@@ -21,13 +21,14 @@ function inl(s) {
   return esc(s)
     .replace(/\[([^\]]+)\]\(((?:https?:\/\/|mailto:|\/)[^)\s]+)\)/g, '<a href="$2">$1</a>')
     .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-    .replace(/\*(.+?)\*/g, "<em>$1</em>");
+    .replace(/\*(.+?)\*/g, "<em>$1</em>")
+    .replace(/~~(.+?)~~/g, "<del>$1</del>");
 }
 function corps(x) {
   return (x || "").trim().split(/\r?\n\s*\r?\n/).filter(Boolean).map(b => {
     b = b.trim(); let m;
     if (b.startsWith("## ")) return `<h3>${inl(b.slice(3))}</h3>`;
-    if (b.startsWith("> ")) return `<blockquote>${inl(b.slice(2))}</blockquote>`;
+    if (b.startsWith("> ")) return `<blockquote>${b.split(/\r?\n/).map(l => inl(l.replace(/^>\s?/, ""))).join("<br>")}</blockquote>`;
     if ((m = b.match(/^!\[([^\]]*)\]\(((?:https?:\/\/|\/)[^)\s]+)\)$/))) return `<img src="${esc(m[2])}" alt="${esc(m[1])}" loading="lazy">`;
     if (/^Q\s*:/.test(b)) return `<p class="q">${inl(b.replace(/^Q\s*:\s*/, ""))}</p>`;
     if (/^R\s*:/.test(b)) return `<p>${inl(b.replace(/^R\s*:\s*/, ""))}</p>`;
