@@ -5,7 +5,9 @@ Site statique bilingue (français / anglais). Aucune dépendance : seul Node.js 
 ## Structure
 
 ```
-config.json            e-mail de contact, URL du site, clés Web3Forms et Cusdis
+config.json            e-mail de contact, URL du site, clé Web3Forms, formulaire Brevo, commentaires (true/false)
+functions/api/          commentaires : fonctions exécutées par Cloudflare (enregistrer, lister, modérer)
+lib/commentaires.js    commentaires : logique commune (vérifications, anti-spam, mail de modération)
 build.js               génère le site dans dist/ (à lire si vous voulez changer les gabarits)
 content/
   interviews/          une interview = un fichier .md
@@ -69,12 +71,14 @@ Une lettre flottante (`static/img/lettre-magique.png`) et le lien « Recevoir la
 
 ## Commentaires
 
-Les interviews et articles peuvent recevoir des commentaires, sans compte pour les lecteurs, grâce à Cusdis.
-1. Créez un compte sur cusdis.com, puis ajoutez un site (*New website*).
-2. Copiez son *App ID* dans `config.json` (`"cusdis": "…"`) et envoyez sur GitHub : un bloc « Commentaires » apparaît en bas de chaque publication.
-3. Chaque nouveau commentaire attend votre validation dans le tableau de bord Cusdis, et vous pouvez être prévenu par mail (réglage dans Cusdis).
+Système maison, gratuit, hébergé par Cloudflare : les lecteurs commentent sans compte ni e-mail (nom ou pseudo + message), en bas de chaque interview et article.
 
-Laissez `"cusdis": ""` pour retirer les commentaires.
+- **Modération** : chaque commentaire arrive *en attente*. Un mail (envoyé par Brevo) arrive sur `sorcieresmortelles@gmail.com` avec deux boutons, **Publier** et **Supprimer** ; chacun ouvre une page de confirmation. Sans action, le commentaire reste invisible.
+- **Anti-spam** : champ piège invisible pour les robots, et 5 commentaires maximum par visiteur toutes les 10 minutes. Les adresses IP ne sont pas stockées en clair.
+- **Données** : base Cloudflare D1 `commentaires` (Storage & databases → D1). La table est créée automatiquement au premier commentaire ; on peut la consulter ou corriger un commentaire depuis l’onglet *Console* de la base.
+- **Réglages Cloudflare** (Workers & Pages → sorcieres-mortelles → Settings) : liaison D1 `DB` → base `commentaires` ; secrets `BREVO_API_KEY` (Brevo → Paramètres → SMTP et API → Clés API) et `SECRET_MODERATION` (texte long et aléatoire qui signe les liens de modération).
+- **Activer / retirer** : `"commentaires": true` ou `false` dans `config.json`.
+- Si les mails de modération n’arrivent pas : dans Brevo, vérifier que le blocage des adresses IP inconnues est désactivé (Paramètres → Sécurité → IP autorisées).
 
 ## Modifier le design
 

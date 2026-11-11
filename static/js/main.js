@@ -62,15 +62,51 @@
     });
   });
 
-  // Commentaires Cusdis : chargés seulement sur les pages qui en ont, dans la langue du visiteur.
-  if (document.getElementById("cusdis_thread")) {
-    var charger = function (src, ensuite) {
-      var s = document.createElement("script");
-      s.src = src; s.async = true;
-      if (ensuite) s.onload = s.onerror = ensuite;
-      b.appendChild(s);
+  // Commentaires : liste des commentaires publiés + formulaire (envoi en attente de relecture).
+  var sec = document.querySelector(".commentaires[data-page]");
+  if (sec && window.fetch) {
+    var page = sec.getAttribute("data-page"), liste = sec.querySelector(".com-liste"), vide = sec.querySelector(".com-vide");
+    var cf = sec.querySelector(".com-form"), cerr = cf.querySelector(".erreur"), cok = sec.querySelector(".com-ok");
+    var MSG = {
+      fr: { trop: "Vous avez envoyé beaucoup de commentaires : réessayez dans quelques minutes.", nom: "Indiquez un nom ou pseudo (60 caractères maximum).", message: "Votre commentaire est vide ou trop long (3000 caractères maximum).", autre: "L’envoi n’a pas fonctionné. Réessayez dans un instant." },
+      en: { trop: "You have sent many comments: please try again in a few minutes.", nom: "Please enter a name or nickname (60 characters max).", message: "Your comment is empty or too long (3000 characters max).", autre: "Sending failed. Please try again in a moment." }
     };
-    var widget = function () { charger("https://cusdis.com/js/cusdis.es.js"); };
-    if (h.lang === "fr") charger("https://cusdis.com/js/widget/lang/fr.js", widget); else widget();
+    var dateTxt = function (iso) {
+      try { return new Date(iso).toLocaleDateString(h.lang === "en" ? "en-GB" : "fr-FR", { day: "numeric", month: "long", year: "numeric" }); } catch (e) { return ""; }
+    };
+    var afficher = function (items) {
+      liste.textContent = "";
+      items.forEach(function (c) {
+        var art = document.createElement("article"); art.className = "com";
+        var tete = document.createElement("p"); tete.className = "com-tete";
+        var nom = document.createElement("strong"); nom.textContent = c.nom;
+        var date = document.createElement("span"); date.className = "meta"; date.textContent = " · " + dateTxt(c.date);
+        tete.appendChild(nom); tete.appendChild(date);
+        var txt = document.createElement("p"); txt.className = "com-texte"; txt.textContent = c.message;
+        art.appendChild(tete); art.appendChild(txt); liste.appendChild(art);
+      });
+      vide.hidden = items.length > 0;
+    };
+    fetch("/api/commentaires?page=" + encodeURIComponent(page))
+      .then(function (r) { return r.json(); })
+      .then(function (d) { afficher(d.commentaires || []); })
+      .catch(function () { vide.hidden = false; });
+    cf.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var btn = cf.querySelector("button[type=submit]"), l = h.lang === "en" ? "en" : "fr";
+      btn.disabled = true; cerr.hidden = true;
+      fetch("/api/commentaires", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ page: page, nom: cf.nom.value, message: cf.message.value, site: cf.site.value, langue: l })
+      })
+        .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+        .then(function (x) {
+          if (!x.ok || !x.d.ok) throw new Error(x.d.erreur || "autre");
+          cf.hidden = true; cok.hidden = false;
+        })
+        .catch(function (err) {
+          btn.disabled = false; cerr.textContent = MSG[l][err.message] || MSG[l].autre; cerr.hidden = false;
+        });
+    });
   }
 })();

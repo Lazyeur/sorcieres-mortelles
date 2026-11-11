@@ -125,3 +125,17 @@ button.envoi{border:0;color:inherit;font:inherit;letter-spacing:.06em;cursor:poi
 .nl-ok{color:var(--menthe)}
 .nl-dialog .meta,.nl-page .meta{margin-top:1.2rem}
 @media (max-width:700px){.lettre{width:64px;top:auto;bottom:max(.75rem,env(safe-area-inset-bottom,0px))}.page{padding-bottom:5rem}.nl-page{grid-template-columns:1fr;gap:1rem}.nl-dessin{order:-1;width:130px;margin:0 auto}}
+
+/* ---------- Commentaires ---------- */
+.commentaires .com-liste{margin:0 0 1.5rem}
+.com{border-top:1px solid var(--mousse);padding:.9rem 0}
+.com-tete{margin:0 0 .35rem}
+.com-tete .meta{font-size:.85em}
+.com-texte{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.com-form{margin-top:1.5rem}
+.com-form label{display:block;margin:0 0 1.1rem}
+.com-form input,.com-form textarea{display:block;width:100%;margin-top:.3rem;background:var(--fond);color:var(--texte);border:1px solid var(--mousse);padding:.6rem;font:inherit}
+.com-form textarea{min-height:7rem}
+.com-form input:focus-visible,.com-form textarea:focus-visible{outline:2px solid var(--menthe)}
+.com-form .erreur{color:#ff9b9b;margin:1rem 0 0}
+.com-ok{color:var(--menthe)}

@@ -130,13 +130,23 @@ ${NL && nav !== "newsletter" ? lettreFlottante() : ""}<script src="/js/main.js?v
 </html>
 `;
 }
-// Commentaires (Cusdis) : affichés seulement si "cusdis" est rempli dans config.json.
-// Le module est chargé par js/main.js, dans la langue choisie par le visiteur.
+// Commentaires (fonctions Cloudflare + base D1, voir functions/ et lib/commentaires.js).
+// Affichés si "commentaires" vaut true dans config.json ; la liste est chargée par js/main.js.
 function commentaires(p) {
-  if (!CFG.cusdis) return "";
-  return `<section class="commentaires">
+  if (!CFG.commentaires) return "";
+  return `<section class="commentaires" data-page="${p.type}/${p.slug}">
 <h3>${bi("Commentaires", "Comments")}</h3>
-<div id="cusdis_thread" data-host="https://cusdis.com" data-app-id="${esc(CFG.cusdis)}" data-page-id="${p.type}/${p.slug}" data-page-url="${esc((CFG.url || "") + url(p))}" data-page-title="${esc(p.fr.titre)}" data-theme="dark"></div>
+<div class="com-liste"></div>
+<p class="com-vide meta" hidden>${bi("Aucun commentaire pour l’instant. Laissez le premier !", "No comments yet. Leave the first one!")}</p>
+<form class="com-form">
+<label>${bi("Votre nom ou pseudo", "Your name or nickname")}<input name="nom" maxlength="60" autocomplete="nickname" required></label>
+<label>${bi("Votre commentaire", "Your comment")}<textarea name="message" maxlength="3000" required></textarea></label>
+<div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden"><input name="site" tabindex="-1" autocomplete="off"></div>
+<button type="submit" class="envoi">${bi("Publier", "Post")}</button>
+<p class="erreur" role="alert" hidden></p>
+</form>
+<p class="com-ok" role="status" hidden>${bi("Merci ! Votre commentaire apparaîtra ici après relecture.", "Thank you! Your comment will appear here once reviewed.")}</p>
+<p class="meta">${bi("Pas besoin de compte ni d’adresse e-mail. Les commentaires sont relus avant publication.", "No account or e-mail address needed. Comments are reviewed before publication.")}</p>
 </section>
 `;
 }
