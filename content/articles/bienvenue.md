@@ -1,6 +1,6 @@
 ---
 titre: Bienvenue chez les Sorcières Mortelles
-sorciere: SAB
+artiste: SAB
 date: 2026-11-10
 resume: Ce que vous trouverez dans ces bois, et comment y apporter votre propre magie.
 ---
