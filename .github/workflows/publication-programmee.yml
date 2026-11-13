@@ -1,0 +1,20 @@
+# Publication programmée : chaque matin, demande à Cloudflare Pages de régénérer le site.
+# Les publications dont la date est arrivée apparaissent alors (voir build.js).
+# Nécessite le secret GitHub CLOUDFLARE_DEPLOY_HOOK (adresse du « deploy hook » Cloudflare, voir README).
+name: Publication programmée
+
+on:
+  schedule:
+    - cron: "0 5 * * *"   # 5 h UTC = 6 h à Paris en hiver, 7 h en été (GitHub peut avoir jusqu'à une heure de retard)
+  workflow_dispatch:       # bouton « Run workflow » pour lancer à la main
+
+jobs:
+  regenerer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Déclencher la régénération du site sur Cloudflare
+        env:
+          HOOK: ${{ secrets.CLOUDFLARE_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$HOOK" ]; then echo "Secret CLOUDFLARE_DEPLOY_HOOK manquant"; exit 1; fi
+          curl -fsS -X POST "$HOOK"

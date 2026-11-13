@@ -37,10 +37,20 @@ static/                copié tel quel dans le site
 | Italique / gras | `*italique*` / `**gras**` |
 | Lien | `[texte](https://…)` |
 | Image dans le texte | `![description](/img/mon-image.jpg)` |
+| Image avec légende / crédit | `![description](/img/mon-image.jpg "Légende © Artiste")` |
 
 4. Mettez vos images dans `static/img/`.
 5. **Version anglaise** (facultative) : créez un second fichier du même nom avec `.en.md`, par exemple `maluha.en.md`, avec `titre`, `resume` et le texte traduit. Sans lui, la page anglaise affiche le texte français avec une note.
 6. Envoyez sur GitHub (voir plus bas). La page apparaît sur le site, dans sa liste et dans Nouveautés.
+
+## Programmer une publication
+
+Mettez simplement une `date` dans le futur : la publication n’est pas mise en ligne avant ce jour-là (heure de Paris). Chaque matin vers 6 h, GitHub demande à Cloudflare de régénérer le site (`.github/workflows/publication-programmee.yml`), et elle apparaît.
+
+Réglage à faire une seule fois :
+1. Cloudflare : Workers & Pages → sorcieres-mortelles → Settings → Builds → *Deploy hooks* → ajouter (nom : `programmation`, branche : `main`) et copier l’adresse obtenue.
+2. GitHub : dépôt → Settings → Secrets and variables → Actions → *New repository secret*, nom `CLOUDFLARE_DEPLOY_HOOK`, valeur : l’adresse copiée.
+3. Pour vérifier : GitHub → Actions → Publication programmée → *Run workflow*.
 
 ## Prévisualiser chez soi
 
@@ -48,6 +58,8 @@ static/                copié tel quel dans le site
 node build.js
 npx serve dist
 ```
+
+Pour voir aussi les publications programmées : `APERCU=1 node build.js` (sous PowerShell : `$env:APERCU=1; node build.js`).
 
 ## Mise en ligne : GitHub + Cloudflare Pages
 

@@ -33,7 +33,11 @@ function corps(x) {
     b = b.trim(); let m;
     if (b.startsWith("## ")) return `<h3>${inl(b.slice(3))}</h3>`;
     if (b.startsWith("> ")) return `<blockquote>${b.split(/\r?\n/).map(l => inl(l.replace(/^>\s?/, ""))).join("<br>")}</blockquote>`;
-    if ((m = b.match(/^!\[([^\]]*)\]\(((?:https?:\/\/|\/)[^)\s]+)\)$/))) return `<img src="${esc(m[2])}" alt="${esc(m[1])}" loading="lazy">`;
+    // Image, avec légende facultative entre guillemets : ![description](/img/x.jpg "Légende © Artiste")
+    if ((m = b.match(/^!\[([^\]]*)\]\(((?:https?:\/\/|\/)[^)\s]+)(?:\s+"([^"]*)")?\)$/))) {
+      const img = `<img src="${esc(m[2])}" alt="${esc(m[1])}" loading="lazy">`;
+      return m[3] ? `<figure>${img}<figcaption>${inl(m[3])}</figcaption></figure>` : img;
+    }
     if (/^Q\s*:/.test(b)) return `<p class="q">${inl(b.replace(/^Q\s*:\s*/, ""))}</p>`;
     if (/^R\s*:/.test(b)) return `<p>${inl(b.replace(/^R\s*:\s*/, ""))}</p>`;
     return `<p>${inl(b).replace(/\r?\n/g, "<br>")}</p>`;
@@ -66,7 +70,15 @@ function charger(type) {
     };
   });
 }
-const tous = Object.keys(TYPES).flatMap(charger).sort((a, b) => a.date < b.date ? 1 : -1);
+// Publication programmée : une publication dont la date est dans le futur (heure de Paris) n'est pas mise en ligne.
+// Le site est régénéré chaque matin (.github/workflows/publication-programmee.yml), elle apparaît donc le jour venu.
+// Pour la voir quand même en local : APERCU=1 node build.js
+const AUJ = new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Paris" });
+const APERCU = !!process.env.APERCU;
+const charges = Object.keys(TYPES).flatMap(charger);
+const futurs = charges.filter(p => p.date > AUJ);
+futurs.forEach(p => console.log(`${APERCU ? "Aperçu" : "Programmé"} : ${p.type}/${p.slug} (${p.date})`));
+const tous = (APERCU ? charges : charges.filter(p => p.date <= AUJ)).sort((a, b) => a.date < b.date ? 1 : -1);
 const url = p => `/${p.type}/${p.slug}/`;
 const tEn = p => (p.en || p.fr);
 const meta = p => (p.artiste ? esc(p.artiste) + " – " : "") + bi(dateTxt(p.date, "fr"), dateTxt(p.date, "en"));
