@@ -99,7 +99,7 @@ const formNewsletter = () => `<form class="nl-form" method="POST" action="${esc(
 <p class="meta">${bi("Une lettre à chaque nouvelle interview ou nouvel article, rien d’autre. Désinscription en un clic depuis chaque mail.", "One letter for each new interview or article, nothing else. Unsubscribe in one click from any e-mail.")}</p>`;
 const introNewsletter = bi("Recevez la lettre magique : un mail à chaque nouvelle publication.", "Receive the magic letter: an e-mail for each new publication.");
 const lienNewsletter = () => (NL ? `<p class="nl-lien"><a href="/newsletter/" data-newsletter>✉ ${bi("Recevoir la lettre magique", "Get the magic letter")}</a></p>\n` : "")
-  + `<p class="nl-lien"><a href="/rss/">◉ ${bi("Suivre par RSS, sans mail ni compte", "Follow by RSS, no e-mail or account")}</a></p>\n`;
+  + `<p class="nl-lien"><a href="/rss/">◉ ${bi("Suivre le sentier RSS, sans mail ni compte", "Follow the RSS trail, no e-mail or account")}</a></p>\n`;
 const lettreFlottante = () => `<a class="lettre" href="/newsletter/" data-newsletter><img src="/img/lettre-magique.png" alt="" width="360" height="360"><span class="vh">${bi("S’inscrire à la lettre magique", "Subscribe to the magic letter")}</span></a>
 <dialog id="newsletter" class="nl-dialog" aria-labelledby="nl-titre">
 <button type="button" class="nl-fermer" data-fermer>✕<span class="vh">${bi("Fermer", "Close")}</span></button>
@@ -307,33 +307,41 @@ ${tous.length ? `<lastBuildDate>${new Date(tous[0].date + "T07:00:00Z").toUTCStr
 }
 ecrire("rss.xml", flux("fr"));
 ecrire("rss-en.xml", flux("en"));
-const adr = f => `<p class="rss-adr"><code>${SITE}/${f}</code> <button type="button" class="envoi rss-copier" data-copier="${SITE}/${f}">${bi("Copier", "Copy")}</button></p>`;
-ecrire("rss/index.html", layout({ titre: ["Suivre par RSS", "Follow by RSS"], cls: "seul",
+const adr = f => `<p class="rss-adr"><code>${SITE}/${f}</code> <button type="button" class="envoi rss-copier" data-copier="${SITE}/${f}">${bi("Copier l’adresse", "Copy the address")}</button></p>`;
+ecrire("rss/index.html", layout({ titre: ["Le sentier RSS", "The RSS Trail"], cls: "seul",
   main: `<section class="panneau">
 <div class="fiche">
-<h2 class="page-titre">${bi("Suivre par RSS", "Follow by RSS")}</h2>
-${biDiv(`<p>Le RSS est la manière historique de suivre des sites web, bien avant les réseaux sociaux. Vous copiez l’adresse du flux ci-dessous dans un <strong>lecteur de flux</strong> : chaque nouvelle interview ou nouvel article y apparaîtra, aux côtés des autres sites que vous suivez.</p>
-<p>Pas d’adresse e-mail à donner, pas de compte, pas d’algorithme qui décide à votre place : tout s’affiche, dans l’ordre, et vous vous désabonnez quand vous voulez. Personne, pas même nous, ne sait qui suit le site.</p>
-<h3>Adresse du flux</h3>
+<h2 class="page-titre">${bi("Le sentier RSS", "The RSS Trail")}</h2>
+${biDiv(`<p>Il existe un vieux sortilège du web, plus ancien que les réseaux sociaux, que beaucoup ont oublié : le <strong>RSS</strong>.</p>
+<p>Il trace un sentier entre ces bois et chez vous. À chaque nouvelle interview, à chaque nouvel article, la publication vient vous trouver, sans que vous ayez à revenir guetter entre les arbres.</p>
+<p>Au bout de ce sentier, personne ne choisit à votre place ce que vous verrez. Aucun algorithme pour trier, aucun fil pour enterrer ce que vous aimez, aucune plateforme entre nous. Ni adresse à confier, ni compte à créer : nous ne savons même pas qui emprunte le chemin. Vous restez libres d’arriver comme de repartir.</p>
+<h3>Tracer le sentier</h3>
+<p>Il vous faut un <strong>lecteur de flux</strong>, une sorte de grimoire qui rassemble les sites que vous aimez suivre. Ouvrez-le, cherchez « Ajouter un flux » ou « S’abonner », et confiez-lui l’adresse de ces bois :</p>
 ${adr("rss.xml")}
-<p class="meta">En anglais : <code>${SITE}/rss-en.xml</code></p>
-<h3>Quel lecteur choisir ?</h3>
-<p>Quelques possibilités, toutes gratuites :</p>
-<p><strong>Sur ordinateur</strong> : Thunderbird (qui sait déjà lire les flux), ou un service en ligne comme Feedly, Inoreader ou The Old Reader.<br>
-<strong>Sur téléphone</strong> : Feeder (Android, libre), NetNewsWire (iPhone et Mac, libre), ou l’application de Feedly ou Inoreader.<br>
-<strong>Pour les plus aventureux</strong> : FreshRSS, à installer soi-même, ou proposé par certains hébergeurs associatifs.</p>
-<p>Dans votre lecteur, cherchez « Ajouter un flux » ou « S’abonner », collez l’adresse, c’est tout. Beaucoup de lecteurs acceptent aussi directement l’adresse du site : <code>${SITE}</code></p>`,
-`<p>RSS is the original way to follow websites, long before social media. Copy the feed address below into a <strong>feed reader</strong>: every new interview or article will show up there, alongside the other sites you follow.</p>
-<p>No e-mail address to give, no account, no algorithm deciding for you: everything is shown, in order, and you can unsubscribe whenever you like. Nobody, not even us, knows who follows the site.</p>
-<h3>Feed address</h3>
+<p class="meta">Les publications en anglais ont leur propre sentier : <code>${SITE}/rss-en.xml</code></p>
+<h3>Quel grimoire choisir ?</h3>
+<p><strong>Thunderbird</strong>, sur ordinateur : il lit déjà vos lettres, il sait aussi lire les flux.<br>
+<strong>Feeder</strong> (Android) et <strong>NetNewsWire</strong> (iPhone, Mac) : libres et gratuits, sans publicité ni pistage.<br>
+<strong>FreshRSS</strong>, pour celleux qui aiment bâtir leur propre cabane : à héberger soi-même, ou chez un hébergeur associatif.<br>
+<strong>Feedly</strong> ou <strong>Inoreader</strong>, si vous préférez un service en ligne prêt à l’emploi.</p>
+<h3>Et ensuite ?</h3>
+<p>Ce sentier ne mène pas qu’ici. Les artistes, les revues, les carnets que vous aimez ont souvent le leur : donnez simplement leur adresse à votre grimoire, il saura souvent le trouver. Petit à petit, vous ferez pousser votre propre forêt, loin des grandes plateformes.</p>
+<blockquote>Toustes des Sorcières, Toustes des Artistes.<br>Et à chacun·e son sentier.</blockquote>`,
+`<p>There is an old spell of the web, older than social media, that many have forgotten: <strong>RSS</strong>.</p>
+<p>It traces a trail between these woods and your home. With each new interview, each new article, the publication comes to find you, without you having to keep watch among the trees.</p>
+<p>At the end of this trail, nobody decides for you what you will see. No algorithm to sort, no feed to bury what you love, no platform standing between us. No address to hand over, no account to create: we don’t even know who walks the path. You remain free to come and to go.</p>
+<h3>Tracing the trail</h3>
+<p>You need a <strong>feed reader</strong>, a kind of grimoire that gathers the sites you like to follow. Open it, look for “Add feed” or “Subscribe”, and give it the address of these woods:</p>
 ${adr("rss-en.xml")}
-<p class="meta">In French: <code>${SITE}/rss.xml</code></p>
-<h3>Which reader?</h3>
-<p>A few options, all free:</p>
-<p><strong>On a computer</strong>: Thunderbird (which already reads feeds), or an online service such as Feedly, Inoreader or The Old Reader.<br>
-<strong>On a phone</strong>: Feeder (Android, open source), NetNewsWire (iPhone and Mac, open source), or the Feedly or Inoreader app.<br>
-<strong>For the adventurous</strong>: FreshRSS, self-hosted, or offered by some community hosting providers.</p>
-<p>In your reader, look for “Add feed” or “Subscribe”, paste the address, and that’s it. Many readers also accept the site’s address directly: <code>${SITE}</code></p>`)}
+<p class="meta">Publications in French have their own trail: <code>${SITE}/rss.xml</code></p>
+<h3>Which grimoire?</h3>
+<p><strong>Thunderbird</strong>, on a computer: it already reads your letters, it can read feeds too.<br>
+<strong>Feeder</strong> (Android) and <strong>NetNewsWire</strong> (iPhone, Mac): free and open source, no ads, no tracking.<br>
+<strong>FreshRSS</strong>, for those who like to build their own cabin: self-hosted, or offered by community hosting providers.<br>
+<strong>Feedly</strong> or <strong>Inoreader</strong>, if you prefer a ready-to-use online service.</p>
+<h3>And then?</h3>
+<p>This trail does not only lead here. The artists, journals and notebooks you love often have their own: simply give their address to your grimoire, it will usually find it. Little by little, you will grow your own forest, far from the big platforms.</p>
+<blockquote>All of Us Witches, All of Us Artists.<br>And to each their own trail.</blockquote>`)}
 </div>
 </section>` }));
 
