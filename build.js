@@ -122,7 +122,7 @@ function layout({ titre, desc, nav, main, cls = "" }) {
 <meta name="description" content="${d}">
 <meta property="og:title" content="${t1}">
 <meta property="og:description" content="${d}">
-${CFG.url ? `<meta property="og:image" content="${CFG.url}/img/maluha.png">\n` : ""}<link rel="icon" href="/img/maluha.png">
+${CFG.url ? `<meta property="og:image" content="${CFG.url}/img/logo-partage.jpg">\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="1200">\n<meta name="twitter:card" content="summary">\n` : ""}<link rel="icon" href="/img/maluha.png">
 <link rel="stylesheet" href="/css/style.css?v=${V.css}">
 <script>try{if(localStorage.getItem("sm-lang")==="en")document.documentElement.lang="en"}catch(e){}</script>
 </head>
