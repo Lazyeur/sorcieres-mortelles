@@ -122,4 +122,16 @@
         });
     });
   }
+
+  // Page RSS : bouton « Copier » l'adresse du flux.
+  document.querySelectorAll("[data-copier]").forEach(function (bt) {
+    bt.addEventListener("click", function () {
+      var t = bt.innerHTML;
+      if (!navigator.clipboard) return;
+      navigator.clipboard.writeText(bt.getAttribute("data-copier")).then(function () {
+        bt.textContent = h.lang === "en" ? "Copied ✓" : "Copié ✓";
+        setTimeout(function () { bt.innerHTML = t; }, 2000);
+      }, function () {});
+    });
+  });
 })();

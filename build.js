@@ -98,7 +98,8 @@ const formNewsletter = () => `<form class="nl-form" method="POST" action="${esc(
 <p class="nl-ok" role="status" hidden>${bi("Presque fini ! Un mail vient de partir : cliquez sur le lien qu’il contient pour confirmer votre inscription.", "Almost done! We just sent you an e-mail: click the link inside to confirm your subscription.")}</p>
 <p class="meta">${bi("Une lettre à chaque nouvelle interview ou nouvel article, rien d’autre. Désinscription en un clic depuis chaque mail.", "One letter for each new interview or article, nothing else. Unsubscribe in one click from any e-mail.")}</p>`;
 const introNewsletter = bi("Recevez la lettre magique : un mail à chaque nouvelle publication.", "Receive the magic letter: an e-mail for each new publication.");
-const lienNewsletter = () => NL ? `<p class="nl-lien"><a href="/newsletter/" data-newsletter>✉ ${bi("Recevoir la lettre magique", "Get the magic letter")}</a></p>\n` : "";
+const lienNewsletter = () => (NL ? `<p class="nl-lien"><a href="/newsletter/" data-newsletter>✉ ${bi("Recevoir la lettre magique", "Get the magic letter")}</a></p>\n` : "")
+  + `<p class="nl-lien"><a href="/rss/">◉ ${bi("Suivre par RSS, sans mail ni compte", "Follow by RSS, no e-mail or account")}</a></p>\n`;
 const lettreFlottante = () => `<a class="lettre" href="/newsletter/" data-newsletter><img src="/img/lettre-magique.png" alt="" width="360" height="360"><span class="vh">${bi("S’inscrire à la lettre magique", "Subscribe to the magic letter")}</span></a>
 <dialog id="newsletter" class="nl-dialog" aria-labelledby="nl-titre">
 <button type="button" class="nl-fermer" data-fermer>✕<span class="vh">${bi("Fermer", "Close")}</span></button>
@@ -123,8 +124,10 @@ function layout({ titre, desc, nav, main, cls = "" }) {
 <meta property="og:title" content="${t1}">
 <meta property="og:description" content="${d}">
 ${CFG.url ? `<meta property="og:image" content="${CFG.url}/img/logo-partage.jpg">\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="1200">\n<meta name="twitter:card" content="summary">\n` : ""}<link rel="icon" href="/img/maluha.png">
+<link rel="alternate" type="application/rss+xml" title="${NOM} (français)" href="/rss.xml">
+<link rel="alternate" type="application/rss+xml" title="${NOM} (English)" href="/rss-en.xml">
 <link rel="stylesheet" href="/css/style.css?v=${V.css}">
-<script>try{if(localStorage.getItem("sm-lang")==="en")document.documentElement.lang="en";if(localStorage.getItem("sm-police")==="lisible")document.documentElement.classList.add("lisible")}catch(e){}</script>
+<script>(function(){var l=(location.search.match(/[?&]lang=(fr|en)(?:&|$)/)||[])[1];try{if(l)localStorage.setItem("sm-lang",l);else l=localStorage.getItem("sm-lang");if(localStorage.getItem("sm-police")==="lisible")document.documentElement.classList.add("lisible")}catch(e){}if(l==="en")document.documentElement.lang="en"})()</script>
 </head>
 <body data-t-fr="${t1}" data-t-en="${t2}">
 <div class="page">
@@ -264,6 +267,76 @@ ${formNewsletter()}
   ecrire("newsletter/confirmee/index.html", layout({ titre: ["Inscription confirmée", "Subscription confirmed"], nav: "newsletter", cls: "seul",
     main: simple("C’est confirmé !", "Confirmed!", "Bienvenue parmi nous. La lettre magique vous trouvera à chaque nouvelle interview ou nouvel article.", "Welcome among us. The magic letter will find you with each new interview or article.") }));
 }
+// ---------- flux RSS ----------
+// Deux fichiers (rss.xml en français, rss-en.xml en anglais) qui listent les publications en ligne,
+// texte complet compris. Les lecteurs de flux (Feedly, NetNewsWire, Thunderbird…) les consultent
+// régulièrement et affichent chaque nouvelle publication à leurs abonnés : ni mail, ni compte, ni algorithme.
+// Les publications programmées n'y figurent qu'à partir de leur date, comme sur le site.
+const SITE = CFG.url || "";
+const absolu = h => h.replace(/(src|href)="\//g, `$1="${SITE}/`);
+const cdata = s => `<![CDATA[${String(s).replace(/]]>/g, "]]]]><![CDATA[>")}]]>`;
+function flux(l) {
+  const en = l === "en", q = en ? "?lang=en" : "";
+  const items = tous.map(p => {
+    const t = en ? tEn(p) : p.fr, lien = SITE + url(p) + q;
+    const img = p.image && /^(https?:\/\/|\/)/.test(p.image) ? `<p><img src="${esc(p.image)}" alt=""></p>\n` : "";
+    const txt = en && !p.en ? `<p><em>This text is only available in French.</em></p>\n${corps(p.fr.corps)}` : corps(t.corps);
+    return `<item>
+<title>${esc(t.titre)}</title>
+<link>${lien}</link>
+<guid isPermaLink="false">${SITE}${url(p)}#${l}</guid>
+<pubDate>${new Date(p.date + "T07:00:00Z").toUTCString()}</pubDate>
+<category>${esc(TYPES[p.type][l])}</category>
+${p.artiste ? `<dc:creator>${esc(p.artiste)}</dc:creator>\n` : ""}<description>${esc(t.resume)}</description>
+<content:encoded>${cdata(absolu(img + txt))}</content:encoded>
+</item>`;
+  }).join("\n");
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+<title>${NOM}</title>
+<link>${SITE}/${q}</link>
+<atom:link href="${SITE}/${en ? "rss-en.xml" : "rss.xml"}" rel="self" type="application/rss+xml"/>
+<description>${en ? "Sorcières Mortelles, art journal: interviews and articles about artists." : "Sorcières Mortelles, journal d’art : interviews et articles d’artistes."}</description>
+<language>${l}</language>
+<image><url>${SITE}/img/logo-partage.jpg</url><title>${NOM}</title><link>${SITE}/${q}</link></image>
+${tous.length ? `<lastBuildDate>${new Date(tous[0].date + "T07:00:00Z").toUTCString()}</lastBuildDate>\n` : ""}${items}
+</channel>
+</rss>
+`;
+}
+ecrire("rss.xml", flux("fr"));
+ecrire("rss-en.xml", flux("en"));
+const adr = f => `<p class="rss-adr"><code>${SITE}/${f}</code> <button type="button" class="envoi rss-copier" data-copier="${SITE}/${f}">${bi("Copier", "Copy")}</button></p>`;
+ecrire("rss/index.html", layout({ titre: ["Suivre par RSS", "Follow by RSS"], cls: "seul",
+  main: `<section class="panneau">
+<div class="fiche">
+<h2 class="page-titre">${bi("Suivre par RSS", "Follow by RSS")}</h2>
+${biDiv(`<p>Le RSS est la manière historique de suivre des sites web, bien avant les réseaux sociaux. Vous copiez l’adresse du flux ci-dessous dans un <strong>lecteur de flux</strong> : chaque nouvelle interview ou nouvel article y apparaîtra, aux côtés des autres sites que vous suivez.</p>
+<p>Pas d’adresse e-mail à donner, pas de compte, pas d’algorithme qui décide à votre place : tout s’affiche, dans l’ordre, et vous vous désabonnez quand vous voulez. Personne, pas même nous, ne sait qui suit le site.</p>
+<h3>Adresse du flux</h3>
+${adr("rss.xml")}
+<p class="meta">En anglais : <code>${SITE}/rss-en.xml</code></p>
+<h3>Quel lecteur choisir ?</h3>
+<p>Quelques possibilités, toutes gratuites :</p>
+<p><strong>Sur ordinateur</strong> : Thunderbird (qui sait déjà lire les flux), ou un service en ligne comme Feedly, Inoreader ou The Old Reader.<br>
+<strong>Sur téléphone</strong> : Feeder (Android, libre), NetNewsWire (iPhone et Mac, libre), ou l’application de Feedly ou Inoreader.<br>
+<strong>Pour les plus aventureux</strong> : FreshRSS, à installer soi-même, ou proposé par certains hébergeurs associatifs.</p>
+<p>Dans votre lecteur, cherchez « Ajouter un flux » ou « S’abonner », collez l’adresse, c’est tout. Beaucoup de lecteurs acceptent aussi directement l’adresse du site : <code>${SITE}</code></p>`,
+`<p>RSS is the original way to follow websites, long before social media. Copy the feed address below into a <strong>feed reader</strong>: every new interview or article will show up there, alongside the other sites you follow.</p>
+<p>No e-mail address to give, no account, no algorithm deciding for you: everything is shown, in order, and you can unsubscribe whenever you like. Nobody, not even us, knows who follows the site.</p>
+<h3>Feed address</h3>
+${adr("rss-en.xml")}
+<p class="meta">In French: <code>${SITE}/rss.xml</code></p>
+<h3>Which reader?</h3>
+<p>A few options, all free:</p>
+<p><strong>On a computer</strong>: Thunderbird (which already reads feeds), or an online service such as Feedly, Inoreader or The Old Reader.<br>
+<strong>On a phone</strong>: Feeder (Android, open source), NetNewsWire (iPhone and Mac, open source), or the Feedly or Inoreader app.<br>
+<strong>For the adventurous</strong>: FreshRSS, self-hosted, or offered by some community hosting providers.</p>
+<p>In your reader, look for “Add feed” or “Subscribe”, paste the address, and that’s it. Many readers also accept the site’s address directly: <code>${SITE}</code></p>`)}
+</div>
+</section>` }));
+
 ecrire("404.html", layout({ titre: ["Page introuvable", "Page not found"], cls: "seul",
   main: simple("Page introuvable", "Page not found", "Cette page n’existe pas, ou plus.", "This page does not exist, or no longer does.") }));
 
