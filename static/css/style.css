@@ -30,6 +30,18 @@ nav a{display:block;text-align:center;text-decoration:none;padding:calc(var(--u)
 .langues button[aria-pressed="true"]{opacity:1;text-decoration:underline;text-underline-offset:.3em}
 .langues button:hover{opacity:1;color:var(--menthe)}
 .langues button:focus-visible{outline:2px solid var(--menthe);outline-offset:1px}
+.outils{display:flex;align-items:center}
+.police{background:none;border:0;border-left:1px solid var(--fond);margin:0;align-self:stretch;color:inherit;font:400 max(.85rem,calc(var(--u)*1.6))/1 "OpenDyslexic",sans-serif;cursor:pointer;padding:0 calc(var(--u)*1.6);opacity:.6}
+.police[aria-pressed="true"]{opacity:1;background:var(--violet)}
+.police:hover{opacity:1;color:var(--menthe)}
+.police:focus-visible{outline:2px solid var(--menthe);outline-offset:-2px}
+@font-face{font-family:"OpenDyslexic";src:url(/fonts/OpenDyslexic-400-normal.woff2) format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"OpenDyslexic";src:url(/fonts/OpenDyslexic-400-italic.woff2) format("woff2");font-weight:400;font-style:italic;font-display:swap}
+@font-face{font-family:"OpenDyslexic";src:url(/fonts/OpenDyslexic-700-normal.woff2) format("woff2");font-weight:700;font-style:normal;font-display:swap}
+html.lisible{--sans:"OpenDyslexic",Verdana,Arial,sans-serif}
+html.lisible body{font-size:max(.95rem,calc(var(--u)*1.35));line-height:1.65}
+html.lisible .fiche p,html.lisible .fiche li{text-align:left;hyphens:none}
+html.lisible nav a{font-size:max(.85rem,calc(var(--u)*1.6));letter-spacing:0}
 nav a:hover{background:var(--violet);color:var(--texte)}
 main{display:grid;grid-template-columns:72fr 28fr;min-height:calc(var(--u)*52)}
 .accueil{background:linear-gradient(180deg,var(--nuit),var(--fond));padding:calc(var(--u)*4.4) calc(var(--u)*4.4) calc(var(--u)*4)}
@@ -144,3 +156,12 @@ button.envoi{border:0;color:inherit;font:inherit;letter-spacing:.06em;cursor:poi
 .com-form input:focus-visible,.com-form textarea:focus-visible{outline:2px solid var(--menthe)}
 .com-form .erreur{color:#ff9b9b;margin:1rem 0 0}
 .com-ok{color:var(--menthe)}
+@media (max-width:700px){
+  nav{grid-template-columns:repeat(4,1fr)}
+  nav a:nth-child(4){border-right:0}
+  .outils{grid-column:1/-1;justify-content:center;border-top:1px solid var(--fond)}
+  .police{padding:.35em 1rem}
+  html.lisible nav{grid-template-columns:repeat(2,1fr)}
+  html.lisible nav a{font-size:.85rem;border-bottom:1px solid var(--fond)}
+  html.lisible nav a:nth-child(2){border-right:0}
+}

@@ -124,7 +124,7 @@ function layout({ titre, desc, nav, main, cls = "" }) {
 <meta property="og:description" content="${d}">
 ${CFG.url ? `<meta property="og:image" content="${CFG.url}/img/logo-partage.jpg">\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="1200">\n<meta name="twitter:card" content="summary">\n` : ""}<link rel="icon" href="/img/maluha.png">
 <link rel="stylesheet" href="/css/style.css?v=${V.css}">
-<script>try{if(localStorage.getItem("sm-lang")==="en")document.documentElement.lang="en"}catch(e){}</script>
+<script>try{if(localStorage.getItem("sm-lang")==="en")document.documentElement.lang="en";if(localStorage.getItem("sm-police")==="lisible")document.documentElement.classList.add("lisible")}catch(e){}</script>
 </head>
 <body data-t-fr="${t1}" data-t-en="${t2}">
 <div class="page">
@@ -132,7 +132,7 @@ ${CFG.url ? `<meta property="og:image" content="${CFG.url}/img/logo-partage.jpg"
 <img class="logo" alt="Sorcières Mortelles" src="/img/logo.png" width="384" height="384">
 <h1><a href="/">SORCIÈRES MORTELLES</a></h1>
 </header>
-<nav id="menu" data-aria-fr="Navigation principale" data-aria-en="Main navigation">${lien("/", "accueil", bi("ACCUEIL", "HOME"))}${lien("/interview/", "interview", "INTERVIEWS")}${lien("/article/", "article", "ARTICLES")}${lien("/contact/", "contact", "CONTACT")}<div class="langues" role="group" id="langues"><button type="button" data-lang-btn="fr" lang="fr" title="Français">FR</button><span aria-hidden="true">/</span><button type="button" data-lang-btn="en" lang="en" title="English">EN</button></div></nav>
+<nav id="menu" data-aria-fr="Navigation principale" data-aria-en="Main navigation">${lien("/", "accueil", bi("ACCUEIL", "HOME"))}${lien("/interview/", "interview", "INTERVIEWS")}${lien("/article/", "article", "ARTICLES")}${lien("/contact/", "contact", "CONTACT")}<div class="outils"><div class="langues" role="group" id="langues"><button type="button" data-lang-btn="fr" lang="fr" title="Français">FR</button><span aria-hidden="true">/</span><button type="button" data-lang-btn="en" lang="en" title="English">EN</button></div><button type="button" id="police" class="police" aria-pressed="false" data-title-fr="Police adaptée à la dyslexie" data-title-en="Dyslexia-friendly font" title="Police adaptée à la dyslexie"><span aria-hidden="true">Aa</span><span class="vh">${bi("Police adaptée à la dyslexie", "Dyslexia-friendly font")}</span></button></div></nav>
 <main class="${cls}">
 ${main}
 </main>

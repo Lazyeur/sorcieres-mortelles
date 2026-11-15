@@ -10,7 +10,20 @@
     document.querySelectorAll("[data-lang-btn]").forEach(function (x) {
       x.setAttribute("aria-pressed", x.getAttribute("data-lang-btn") === l ? "true" : "false");
     });
+    var p = document.getElementById("police");
+    if (p) p.title = p.getAttribute("data-title-" + l);
     if (save) { try { localStorage.setItem("sm-lang", l); } catch (e) {} }
+  }
+
+  // Police adaptée à la dyslexie (OpenDyslexic) : bascule et mémorisation.
+  var pol = document.getElementById("police");
+  if (pol) {
+    pol.setAttribute("aria-pressed", h.classList.contains("lisible") ? "true" : "false");
+    pol.addEventListener("click", function () {
+      var on = h.classList.toggle("lisible");
+      pol.setAttribute("aria-pressed", on ? "true" : "false");
+      try { if (on) localStorage.setItem("sm-police", "lisible"); else localStorage.removeItem("sm-police"); } catch (e) {}
+    });
   }
   document.getElementById("langues").addEventListener("click", function (e) {
     var x = e.target.closest("button");
