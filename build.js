@@ -7,7 +7,7 @@ const NOM = "Sorcières Mortelles";
 // Empreinte des fichiers CSS et JS, ajoutée à leur adresse (?v=…) : après chaque mise en ligne,
 // les navigateurs prennent la nouvelle version au lieu de leur ancienne copie en cache.
 const empreinte = rel => require("crypto").createHash("md5").update(fs.readFileSync(path.join(ROOT, "static", rel))).digest("hex").slice(0, 8);
-const V = { css: empreinte("css/style.css"), js: empreinte("js/main.js") };
+const V = { css: empreinte("css/style.css"), js: empreinte("js/main.js"), partage: empreinte("img/logo-partage.jpg") };
 
 const TYPES = {
   interview: { dir: "interviews", fr: "Interviews", en: "Interviews", retFr: "← Toutes les interviews", retEn: "← All interviews" },
@@ -123,7 +123,7 @@ function layout({ titre, desc, nav, main, cls = "" }) {
 <meta name="description" content="${d}">
 <meta property="og:title" content="${t1}">
 <meta property="og:description" content="${d}">
-${CFG.url ? `<meta property="og:image" content="${CFG.url}/img/logo-partage.jpg">\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="1200">\n<meta name="twitter:card" content="summary">\n` : ""}<link rel="icon" href="/img/maluha.png">
+${CFG.url ? `<meta property="og:image" content="${CFG.url}/img/logo-partage.jpg?v=${V.partage}">\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="1200">\n<meta name="twitter:card" content="summary">\n` : ""}<link rel="icon" href="/img/maluha.png">
 <link rel="alternate" type="application/rss+xml" title="${NOM} (français)" href="/rss.xml">
 <link rel="alternate" type="application/rss+xml" title="${NOM} (English)" href="/rss-en.xml">
 <link rel="stylesheet" href="/css/style.css?v=${V.css}">
