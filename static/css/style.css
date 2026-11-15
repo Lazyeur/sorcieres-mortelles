@@ -21,6 +21,7 @@ a:hover{color:var(--menthe)}
 a:focus-visible{outline:2px solid var(--menthe);outline-offset:-4px}
 header{display:flex;align-items:center;height:calc(var(--u)*14.2);overflow:hidden;background:var(--fond)}
 header img{height:100%;width:auto;align-self:flex-end;margin-left:5.5%;flex:none}
+header img.logo{height:90%;align-self:center}
 header h1{flex:1;margin:0 4.3% 0 1.3%;text-align:center;white-space:nowrap;font:400 calc(var(--u)*6.6)/1 "Blackwood Castle","Times New Roman",serif;color:var(--texte)}
 nav{display:grid;grid-template-columns:repeat(4,1fr) auto;background:var(--mousse)}
 nav a{display:block;text-align:center;text-decoration:none;padding:calc(var(--u)*1.3) 0;font-size:max(1rem,calc(var(--u)*2.1));letter-spacing:.06em;border-right:1px solid var(--fond)}
@@ -73,6 +74,7 @@ main.seul{grid-template-columns:1fr}
   .panneau{padding:2rem 1.25rem}
   header{height:auto;flex-wrap:wrap;justify-content:center;padding-top:1rem}
   header img{height:28vw;margin-left:0}
+  header img.logo{height:40vw;margin:.2rem 0 .8rem}
   header h1{flex:1 1 100%;margin:.2em 3% .3em;white-space:normal;font-size:12vw}
   header img{order:2}
   header h1{order:1}
