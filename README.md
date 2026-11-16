@@ -5,7 +5,10 @@ Site statique bilingue (français / anglais). Aucune dépendance : seul Node.js 
 ## Structure
 
 ```
-config.json            e-mail de contact, URL du site, clé Web3Forms, formulaire Brevo, commentaires (true/false)
+config.json            e-mail de contact, URL du site, clé Web3Forms, formulaire Brevo, commentaires (true/false), profil Mastodon
+workers/               publication-programmee.js : Worker Cloudflare qui régénère le site chaque nuit
+scripts/mastodon.mjs   annonce les nouvelles publications sur Mastodon (lancé chaque matin par GitHub)
+.github/workflows/     actions GitHub : Mastodon, et régénération du site (filet de sécurité)
 functions/api/          commentaires : fonctions exécutées par Cloudflare (enregistrer, lister, modérer)
 lib/commentaires.js    commentaires : logique commune (vérifications, anti-spam, mail de modération)
 build.js               génère le site dans dist/ (à lire si vous voulez changer les gabarits)
@@ -45,12 +48,14 @@ static/                copié tel quel dans le site
 
 ## Programmer une publication
 
-Mettez simplement une `date` dans le futur : la publication n’est pas mise en ligne avant ce jour-là (heure de Paris). Chaque matin vers 6 h, GitHub demande à Cloudflare de régénérer le site (`.github/workflows/publication-programmee.yml`), et elle apparaît.
+Mettez simplement une `date` dans le futur : la publication n’est pas mise en ligne avant ce jour-là (heure de Paris). Chaque nuit, juste après minuit (heure de Paris), le Worker Cloudflare `publication-programmee` (`workers/publication-programmee.js`) demande à Cloudflare Pages de régénérer le site : la publication apparaît, ainsi que dans les flux RSS. Elle est annoncée sur Mastodon le matin même (voir plus bas). Un filet de sécurité régénère aussi le site vers 6 h depuis GitHub (`.github/workflows/publication-programmee.yml`), au cas où le Worker n’aurait pas tourné.
 
 Réglage à faire une seule fois :
 1. Cloudflare : Workers & Pages → sorcieres-mortelles → Settings → Builds → *Deploy hooks* → ajouter (nom : `programmation`, branche : `main`) et copier l’adresse obtenue.
-2. GitHub : dépôt → Settings → Secrets and variables → Actions → *New repository secret*, nom `CLOUDFLARE_DEPLOY_HOOK`, valeur : l’adresse copiée.
-3. Pour vérifier : GitHub → Actions → Publication programmée → *Run workflow*.
+2. Cloudflare : Workers & Pages → *Create* → *Create Worker*, nom `publication-programmee` → *Deploy*, puis *Edit code* : coller le contenu de `workers/publication-programmee.js` et *Deploy*.
+3. Dans ce Worker → Settings → *Variables and Secrets* : secret `DEPLOY_HOOK` = l’adresse copiée. Puis Settings → *Trigger events* → *Cron* : `5 23 * * *` (23 h 05 UTC = 0 h 05 à Paris en hiver, 1 h 05 en été).
+4. GitHub (filet de sécurité) : dépôt → Settings → Secrets and variables → Actions → *New repository secret*, nom `CLOUDFLARE_DEPLOY_HOOK`, valeur : la même adresse.
+5. Pour vérifier : Cloudflare → le Worker → *Deployments* / *Observability* montre ses passages de la nuit ; ou GitHub → Actions → Publication programmée → *Run workflow* pour régénérer le site tout de suite.
 
 ## Prévisualiser chez soi
 
