@@ -22,7 +22,8 @@ async function annoncer() {
   if (!MASTODON_INSTANCE || !MASTODON_TOKEN) throw new Error("Secret MASTODON_INSTANCE ou MASTODON_TOKEN manquant");
   // Seule l'adresse du serveur compte (https://sunny.garden) : un éventuel /@compte à la suite est ignoré.
   const api = new URL(MASTODON_INSTANCE).origin + "/api/v1";
-  const auth = { Authorization: "Bearer " + MASTODON_TOKEN };
+  // Tolère un jeton collé avec des espaces, un retour à la ligne ou le mot « Bearer » devant.
+  const auth = { Authorization: "Bearer " + MASTODON_TOKEN.trim().replace(/^Bearer\s+/i, "") };
   const json = async (u, opt) => {
     const r = await fetch(u, opt);
     if (!r.ok) throw new Error(`${u} a répondu ${r.status} : ${await r.text()}`);
