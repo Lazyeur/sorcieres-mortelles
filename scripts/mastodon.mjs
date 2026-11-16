@@ -1,6 +1,6 @@
 // Publication automatique sur Mastodon (lancé chaque matin par .github/workflows/mastodon.yml).
-// Lit le flux RSS du site en ligne (rss.xml, et rss-en.xml pour le titre anglais) et publie sur
-// Mastodon chaque nouvelle interview ou nouvel article qui n'y est pas encore.
+// Lit le flux RSS anglais du site en ligne (rss-en.xml, et rss.xml pour le titre français) et publie
+// sur Mastodon, en anglais, chaque nouvelle interview ou nouvel article qui n'y est pas encore.
 // Rien n'est stocké : avant de publier, le script relit les derniers messages du compte et saute
 // toute publication dont le lien y figure déjà. Seules les publications des 3 derniers jours sont
 // prises en compte, pour ne pas republier tout le site au premier lancement.
@@ -12,7 +12,7 @@
 // Essai à la main : MASTODON_INSTANCE=… MASTODON_TOKEN=… ESSAI=1 node scripts/mastodon.mjs
 
 const SITE = "https://sorcieres-mortelles.fr";
-const HASHTAGS = "#art #artistes";   // ajoutés en fin de message ; à modifier librement
+const HASHTAGS = "#art #artists"; // ajoutés en fin de message ; à modifier librement
 const JOURS = 3;                       // âge maximal d'une publication pour être annoncée
 
 const { MASTODON_INSTANCE, MASTODON_TOKEN } = process.env;
@@ -29,9 +29,9 @@ async function annoncer() {
     return r.json();
   };
 
-  const [fr, en] = await Promise.all([lireFlux(SITE + "/rss.xml"), lireFlux(SITE + "/rss-en.xml")]);
-  const titresEn = new Map(en.map(i => [i.guid.replace(/#.*$/, ""), i.titre]));
-  const recents = fr.filter(i => Date.now() - i.date < JOURS * 864e5);
+  const [en, fr] = await Promise.all([lireFlux(SITE + "/rss-en.xml"), lireFlux(SITE + "/rss.xml")]);
+  const titresFr = new Map(fr.map(i => [i.guid.replace(/#.*$/, ""), i.titre]));
+  const recents = en.filter(i => Date.now() - i.date < JOURS * 864e5);
   if (!recents.length) return console.log("Aucune publication de moins de 3 jours : rien à faire.");
 
   const moi = await json(api + "/accounts/verify_credentials", { headers: auth });
@@ -43,30 +43,30 @@ async function annoncer() {
   // Du plus ancien au plus récent, pour que le fil Mastodon suive l'ordre des publications.
   for (const i of recents.reverse()) {
     if (dejaVu(i.lien)) { console.log("Déjà sur Mastodon :", i.lien); continue; }
-    const message = rediger(i, titresEn.get(i.guid.replace(/#.*$/, "")));
+    const message = rediger(i, titresFr.get(i.guid.replace(/#.*$/, "")));
     n++;
     console.log("----\n" + message + "\n----");
     if (ESSAI) continue;
     const s = await json(api + "/statuses", {
       method: "POST",
       headers: { ...auth, "Content-Type": "application/json", "Idempotency-Key": i.guid },
-      body: JSON.stringify({ status: message, visibility: "public", language: "fr" })
+      body: JSON.stringify({ status: message, visibility: "public", language: "en" })
     });
     console.log("Publié sur Mastodon :", s.url);
   }
   if (!n) console.log("Rien de nouveau à publier.");
 }
 
-function rediger(i, titreEn) {
-  const annonce = /interview/i.test(i.categorie) ? "Nouvelle interview" : "Nouvel article";
-  const en = titreEn && titreEn !== i.titre ? `\n\n🇬🇧 ${titreEn}` : "";
+function rediger(i, titreFr) {
+  const annonce = /interview/i.test(i.categorie) ? "New interview" : "New article";
+  const fr = titreFr && titreFr !== i.titre ? `\n\n🇫🇷 ${titreFr}` : "";
   const fin = `\n\n${i.lien}\n\n${HASHTAGS}`.trimEnd();
   let resume = i.resume ? `\n\n${i.resume}` : "";
-  const tete = `✦ ${annonce}\n\n${i.titre}${i.artiste ? `\npar ${i.artiste}` : ""}`;
+  const tete = `✦ ${annonce}\n\n${i.titre}${i.artiste ? `\nby ${i.artiste}` : ""}`;
   // Mastodon limite à 500 caractères : on raccourcit le résumé si besoin.
-  const reste = 490 - (tete + en + fin).length;
+  const reste = 490 - (tete + fr + fin).length;
   if (resume.length > reste) resume = reste > 10 ? resume.slice(0, reste - 1).trimEnd() + "…" : "";
-  return tete + resume + en + fin;
+  return tete + resume + fr + fin;
 }
 
 // Lecture simple du flux généré par build.js (format connu, pas besoin d'un vrai analyseur XML).

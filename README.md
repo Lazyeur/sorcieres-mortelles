@@ -94,7 +94,7 @@ Système maison, gratuit, hébergé par Cloudflare : les lecteurs commentent san
 
 ## Mastodon
 
-Chaque matin vers 7 h 30, une action GitHub (`.github/workflows/mastodon.yml`, qui lance `scripts/mastodon.mjs`) lit le flux RSS du site et publie sur le compte Mastodon chaque nouvelle interview ou nouvel article (titre, auteur·ice, résumé, titre anglais s’il diffère, lien, hashtags). Rien n’est stocké : le script regarde les derniers messages du compte et ne republie jamais un lien déjà présent. Seules les publications des 3 derniers jours sont annoncées.
+Chaque matin vers 7 h 30, une action GitHub (`.github/workflows/mastodon.yml`, qui lance `scripts/mastodon.mjs`) lit le flux RSS anglais du site (`rss-en.xml`) et publie sur le compte Mastodon, en anglais, chaque nouvelle interview ou nouvel article (titre, auteur·ice, résumé, titre français s’il diffère, lien vers la version anglaise, hashtags). Rien n’est stocké : le script regarde les derniers messages du compte et ne republie jamais un lien déjà présent. Seules les publications des 3 derniers jours sont annoncées.
 
 (Un Worker Cloudflare ne peut pas servir ici : Cloudflare échoue à se connecter en https au serveur sunny.garden, erreur 525.)
 
