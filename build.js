@@ -124,7 +124,7 @@ function layout({ titre, desc, nav, main, cls = "" }) {
 <meta property="og:title" content="${t1}">
 <meta property="og:description" content="${d}">
 ${CFG.url ? `<meta property="og:image" content="${CFG.url}/img/logo-partage.jpg?v=${V.partage}">\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="1200">\n<meta name="twitter:card" content="summary">\n` : ""}<link rel="icon" href="/img/maluha.png">
-<link rel="alternate" type="application/rss+xml" title="${NOM} (français)" href="/rss.xml">
+${CFG.mastodon ? `<link rel="me" href="${esc(CFG.mastodon)}">\n` : ""}<link rel="alternate" type="application/rss+xml" title="${NOM} (français)" href="/rss.xml">
 <link rel="alternate" type="application/rss+xml" title="${NOM} (English)" href="/rss-en.xml">
 <link rel="stylesheet" href="/css/style.css?v=${V.css}">
 <script>(function(){var l=(location.search.match(/[?&]lang=(fr|en)(?:&|$)/)||[])[1];try{if(l)localStorage.setItem("sm-lang",l);else l=localStorage.getItem("sm-lang");if(localStorage.getItem("sm-police")==="lisible")document.documentElement.classList.add("lisible")}catch(e){}if(l==="en")document.documentElement.lang="en"})()</script>

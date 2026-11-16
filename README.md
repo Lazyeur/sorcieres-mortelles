@@ -92,6 +92,21 @@ Système maison, gratuit, hébergé par Cloudflare : les lecteurs commentent san
 - **Activer / retirer** : `"commentaires": true` ou `false` dans `config.json`.
 - Si les mails de modération n’arrivent pas : dans Brevo, vérifier que le blocage des adresses IP inconnues est désactivé (Paramètres → Sécurité → IP autorisées).
 
+## Mastodon
+
+Chaque matin vers 7 h 30, une action GitHub (`.github/workflows/mastodon.yml`, qui lance `scripts/mastodon.mjs`) lit le flux RSS du site et publie sur le compte Mastodon chaque nouvelle interview ou nouvel article (titre, auteur·ice, résumé, titre anglais s’il diffère, lien, hashtags). Rien n’est stocké : le script regarde les derniers messages du compte et ne republie jamais un lien déjà présent. Seules les publications des 3 derniers jours sont annoncées.
+
+(Un Worker Cloudflare ne peut pas servir ici : Cloudflare échoue à se connecter en https au serveur sunny.garden, erreur 525.)
+
+Réglage à faire une seule fois :
+1. Mastodon : Préférences → Développement → *Nouvelle application* (nom : `sorcieres-mortelles.fr`). Dans les autorisations, ne cocher que `read:accounts`, `read:statuses` et `write:statuses`. Enregistrer, rouvrir l’application et copier le *jeton d’accès*.
+2. GitHub : dépôt → Settings → Secrets and variables → Actions → *New repository secret*, deux fois : `MASTODON_INSTANCE` = adresse du serveur (`https://sunny.garden`, sans le `/@compte`) et `MASTODON_TOKEN` = le jeton copié.
+3. Pour vérifier : GitHub → Actions → Mastodon → *Run workflow*. La case « Essai » est cochée par défaut : le journal affiche le ou les messages qui partiraient, sans rien publier. Décochez-la pour publier tout de suite.
+
+Les hashtags se changent en haut de `scripts/mastodon.mjs` (`HASHTAGS`).
+
+**Profil vérifié** : mettre l’adresse du profil dans `config.json` (`"mastodon": "https://sunny.garden/@sorcieresmortelles"`), puis sur Mastodon (Modifier le profil → Champs supplémentaires) ajouter `https://sorcieres-mortelles.fr` : le lien apparaît en vert, certifié.
+
 ## Modifier le design
 
 Tout est dans `static/css/style.css` (couleurs en haut, dans `:root`). La structure des pages est dans `build.js`.

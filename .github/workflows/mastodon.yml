@@ -1,0 +1,28 @@
+# Mastodon : chaque matin, annonce sur Mastodon les nouvelles publications du site (scripts/mastodon.mjs).
+# Nécessite les secrets GitHub MASTODON_INSTANCE et MASTODON_TOKEN (voir README).
+name: Mastodon
+
+on:
+  schedule:
+    - cron: "30 6 * * *"   # 6 h 30 UTC = 7 h 30 à Paris en hiver, 8 h 30 en été (GitHub peut avoir du retard)
+  workflow_dispatch:         # bouton « Run workflow » pour lancer à la main
+    inputs:
+      essai:
+        description: "Essai : afficher les messages sans rien publier"
+        type: boolean
+        default: true
+
+jobs:
+  annoncer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Publier les nouveautés sur Mastodon
+        env:
+          MASTODON_INSTANCE: ${{ secrets.MASTODON_INSTANCE }}
+          MASTODON_TOKEN: ${{ secrets.MASTODON_TOKEN }}
+          ESSAI: ${{ inputs.essai }}
+        run: node scripts/mastodon.mjs
