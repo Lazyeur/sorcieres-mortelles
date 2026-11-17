@@ -53,7 +53,7 @@ Mettez simplement une `date` dans le futur : la publication n’est pas mise en 
 Réglage à faire une seule fois :
 1. Cloudflare : Workers & Pages → sorcieres-mortelles → Settings → Builds → *Deploy hooks* → ajouter (nom : `programmation`, branche : `main`) et copier l’adresse obtenue.
 2. Cloudflare : Workers & Pages → *Create* → *Create Worker*, nom `publication-programmee` → *Deploy*, puis *Edit code* : coller le contenu de `workers/publication-programmee.js` et *Deploy*.
-3. Dans ce Worker → Settings → *Variables and Secrets* : secret `DEPLOY_HOOK` = l’adresse copiée. Puis Settings → *Trigger events* → *Cron* : `5 23 * * *` (23 h 05 UTC = 0 h 05 à Paris en hiver, 1 h 05 en été).
+3. Dans ce Worker → Settings → *Variables and Secrets* : secret `DEPLOY_HOOK` = l’adresse copiée. Puis Settings → *Trigger events* → *Cron* : `5 23 * * *` (23 h 05 UTC = 0 h 05 à Paris en hiver, 1 h 05 en été). Le même Worker lance aussi l’annonce Mastodon du matin (voir la section Mastodon).
 4. GitHub (filet de sécurité) : dépôt → Settings → Secrets and variables → Actions → *New repository secret*, nom `CLOUDFLARE_DEPLOY_HOOK`, valeur : la même adresse.
 5. Pour vérifier : Cloudflare → le Worker → *Deployments* / *Observability* montre ses passages de la nuit ; ou GitHub → Actions → Publication programmée → *Run workflow* pour régénérer le site tout de suite.
 
@@ -100,14 +100,16 @@ Système maison, gratuit, hébergé par Cloudflare : les lecteurs commentent san
 
 ## Mastodon
 
-Chaque matin vers 7 h 30, une action GitHub (`.github/workflows/mastodon.yml`, qui lance `scripts/mastodon.mjs`) lit le flux RSS anglais du site (`rss-en.xml`) et publie sur le compte Mastodon, en anglais, chaque nouvelle interview ou nouvel article (titre, auteur·ice, résumé, titre français s’il diffère, lien vers la version anglaise, hashtags). Rien n’est stocké : le script regarde les derniers messages du compte et ne republie jamais un lien déjà présent. Seules les publications des 3 derniers jours sont annoncées.
+Chaque matin vers 7 h 30, le Worker Cloudflare `publication-programmee` demande à GitHub de lancer l’action Mastodon (`.github/workflows/mastodon.yml`, qui lance `scripts/mastodon.mjs`). Elle lit le flux RSS anglais du site (`rss-en.xml`) et publie sur le compte Mastodon, en anglais, chaque nouvelle interview ou nouvel article (titre, auteur·ice, résumé, titre français s’il diffère, lien vers la version anglaise, hashtags). Rien n’est stocké : le script regarde les derniers messages du compte et ne republie jamais un lien déjà présent. Seules les publications des 3 derniers jours sont annoncées.
 
-(Un Worker Cloudflare ne peut pas servir ici : Cloudflare échoue à se connecter en https au serveur sunny.garden, erreur 525.)
+Pourquoi ce détour : le Worker ne peut pas écrire lui-même à Mastodon (Cloudflare échoue à se connecter en https au serveur sunny.garden, erreur 525), et les horaires programmés de GitHub ont souvent plusieurs heures de retard, voire sautent un jour. L’action garde quand même son propre horaire (6 h 30 UTC) en filet de sécurité : si elle passe deux fois, rien n’est publié en double.
 
 Réglage à faire une seule fois :
 1. Mastodon : Préférences → Développement → *Nouvelle application* (nom : `sorcieres-mortelles.fr`). Dans les autorisations, ne cocher que `read:accounts`, `read:statuses` et `write:statuses`. Enregistrer, rouvrir l’application et copier le *jeton d’accès*.
 2. GitHub : dépôt → Settings → Secrets and variables → Actions → *New repository secret*, deux fois : `MASTODON_INSTANCE` = adresse du serveur (`https://sunny.garden`, sans le `/@compte`) et `MASTODON_TOKEN` = le jeton copié.
-3. Pour vérifier : GitHub → Actions → Mastodon → *Run workflow*. La case « Essai » est cochée par défaut : le journal affiche le ou les messages qui partiraient, sans rien publier. Décochez-la pour publier tout de suite.
+3. GitHub : photo de profil → Settings → Developer settings → Personal access tokens → *Fine-grained tokens* → *Generate new token*. Nom : `worker-mastodon` ; expiration : la plus longue proposée (à renouveler ensuite) ; *Repository access* : *Only select repositories* → `sorcieres-mortelles` ; *Permissions* → *Actions* : *Read and write* (rien d’autre). Copier le jeton.
+4. Cloudflare : Worker `publication-programmee` → Settings → *Variables and Secrets* : secret `GITHUB_TOKEN` = ce jeton. Puis *Edit code* : recoller `workers/publication-programmee.js` et *Deploy*. Puis Settings → *Trigger events* : ajouter un second *Cron* `30 6 * * *`.
+5. Pour vérifier : GitHub → Actions → Mastodon → *Run workflow*. La case « Essai » est cochée par défaut : le journal affiche le ou les messages qui partiraient, sans rien publier. Décochez-la pour publier tout de suite. Les lancements venus du Worker apparaissent dans la même liste chaque matin, marqués *workflow_dispatch*.
 
 Les hashtags se changent en haut de `scripts/mastodon.mjs` (`HASHTAGS`).
 
