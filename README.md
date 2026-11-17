@@ -111,6 +111,10 @@ Réglage à faire une seule fois :
 4. Cloudflare : Worker `publication-programmee` → Settings → *Variables and Secrets* : secret `GITHUB_TOKEN` = ce jeton. Puis *Edit code* : recoller `workers/publication-programmee.js` et *Deploy*. Puis Settings → *Trigger events* : ajouter un second *Cron* `30 6 * * *`.
 5. Pour vérifier : GitHub → Actions → Mastodon → *Run workflow*. La case « Essai » est cochée par défaut : le journal affiche le ou les messages qui partiraient, sans rien publier. Décochez-la pour publier tout de suite. Les lancements venus du Worker apparaissent dans la même liste chaque matin, marqués *workflow_dispatch*.
 
+> ⚠️ **Jeton GitHub `worker-mastodon` : expire vers le 15 février 2027** (créé le 17 novembre 2026, valable 90 jours ; la date exacte est affichée sur GitHub, dans la liste des *Fine-grained tokens*).
+> Passé cette date, les annonces du matin ne partent plus (l’horaire de secours de GitHub peut encore les rattraper, en retard). Quelques jours avant : sur GitHub, ouvrir le jeton `worker-mastodon` → *Regenerate token*, copier le nouveau, puis dans Cloudflare remplacer le secret `GITHUB_TOKEN` du Worker `publication-programmee`. Mettre ensuite à jour la date ci-dessus.
+> Le jeton Mastodon (`MASTODON_TOKEN`), lui, n’expire pas.
+
 Les hashtags se changent en haut de `scripts/mastodon.mjs` (`HASHTAGS`).
 
 **Profil vérifié** : mettre l’adresse du profil dans `config.json` (`"mastodon": "https://sunny.garden/@sorcieresmortelles"`), puis sur Mastodon (Modifier le profil → Champs supplémentaires) ajouter `https://sorcieres-mortelles.fr` : le lien apparaît en vert, certifié.

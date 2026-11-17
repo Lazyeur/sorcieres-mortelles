@@ -10,7 +10,8 @@
 //   - code : ce fichier, collé dans l'éditeur ;
 //   - secret DEPLOY_HOOK : adresse du deploy hook du projet Pages (Settings → Builds → Deploy hooks) ;
 //   - secret GITHUB_TOKEN : jeton GitHub limité au dépôt sorcieres-mortelles, autorisation
-//     « Actions : Read and write » seulement (voir README, section Mastodon) ;
+//     « Actions : Read and write » seulement (voir README, section Mastodon).
+//     ⚠️ Jeton créé le 17/11/2026 pour 90 jours : EXPIRE VERS LE 15/02/2027, à régénérer avant ;
 //   - déclencheurs (Settings → Trigger events → Cron), deux lignes :
 //       5 23 * * *   régénération (23 h 05 UTC = 0 h 05 à Paris en hiver, 1 h 05 en été)
 //       30 6 * * *   Mastodon (6 h 30 UTC = 7 h 30 à Paris en hiver, 8 h 30 en été)
