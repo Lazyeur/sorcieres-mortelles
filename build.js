@@ -383,4 +383,25 @@ ${VOISINES.length
 ecrire("404.html", layout({ titre: ["Page introuvable", "Page not found"], cls: "seul",
   main: simple("Page introuvable", "Page not found", "Cette page n’existe pas, ou plus.", "This page does not exist, or no longer does.") }));
 
+// ---------- sitemap.xml et robots.txt ----------
+// Plan du site pour les moteurs de recherche : toutes les pages publiques (pas les pages de
+// remerciement ou de confirmation), avec leur version anglaise (?lang=en) indiquée comme alternative.
+// Les publications programmées n'y figurent qu'à partir de leur date, comme sur le site.
+if (SITE) {
+  const dernier = tous.length ? tous[0].date : "";
+  const pages = [
+    { u: "/", d: dernier }, { u: "/interview/", d: (tous.find(p => p.type === "interview") || {}).date },
+    { u: "/article/", d: (tous.find(p => p.type === "article") || {}).date },
+    ...tous.map(p => ({ u: url(p), d: p.date })),
+    { u: "/social/" }, { u: "/rss/" }, ...(NL ? [{ u: "/newsletter/" }] : []), { u: "/contact/" }
+  ];
+  const alt = (l, h) => `<xhtml:link rel="alternate" hreflang="${l}" href="${h}"/>`;
+  ecrire("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+${pages.flatMap(({ u, d }) => ["", "?lang=en"].map(q => `<url><loc>${SITE}${u}${q}</loc>${d ? `<lastmod>${d}</lastmod>` : ""}${alt("fr", SITE + u)}${alt("en", SITE + u + "?lang=en")}${alt("x-default", SITE + u)}</url>`)).join("\n")}
+</urlset>
+`);
+  ecrire("robots.txt", `User-agent: *\nAllow: /\n\nSitemap: ${SITE}/sitemap.xml\n`);
+}
+
 console.log(`Site généré dans dist/ : ${tous.length} publication(s).`);

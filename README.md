@@ -73,6 +73,7 @@ Le site est publié par Cloudflare Pages (projet `sorcieres-mortelles`, gratuit)
 - Réglages du projet (Workers & Pages → sorcieres-mortelles → Settings) : *Build command* `node build.js`, *Build output directory* `dist`, variable d’environnement `NODE_VERSION` = `20`.
 - Domaine : acheté chez OVH, mais ses DNS sont gérés par Cloudflare (Domains → sorcieres-mortelles.fr → DNS). Les lignes MX et TXT servent aux mails OVH et à Brevo : ne pas les supprimer.
 - Statistiques de visite : Workers & Pages → sorcieres-mortelles → Metrics → Web Analytics.
+- Moteurs de recherche : `sitemap.xml` (plan du site, versions françaises et anglaises) et `robots.txt` sont générés par `build.js` à chaque mise en ligne. Pour suivre le référencement, déclarer `https://sorcieres-mortelles.fr/sitemap.xml` dans Google Search Console (et Bing Webmaster Tools).
 
 ## Formulaire de contact
 
