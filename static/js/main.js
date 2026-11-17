@@ -5,6 +5,12 @@
   function set(l, save) {
     h.lang = l;
     document.title = b.getAttribute("data-t-" + l) || document.title;
+    var md = document.querySelector('meta[name="description"]'), dl = b.getAttribute("data-d-" + l);
+    if (md && dl) md.setAttribute("content", dl);
+    // Les moteurs ne doivent citer que la langue affichée.
+    document.querySelectorAll("[data-l]").forEach(function (x) {
+      if (x.getAttribute("data-l") === l) x.removeAttribute("data-nosnippet"); else x.setAttribute("data-nosnippet", "");
+    });
     var m = document.getElementById("menu");
     m.setAttribute("aria-label", m.getAttribute("data-aria-" + l));
     document.querySelectorAll("[data-lang-btn]").forEach(function (x) {

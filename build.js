@@ -17,8 +17,9 @@ const TYPES = {
 // ---------- outils de texte ----------
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const sur = c => /^[#a-zA-Z0-9(),.% ]+$/.test(c || "") ? c : "";
-const bi = (fr, en) => `<span data-l="fr">${fr}</span><span data-l="en">${en}</span>`;
-const biDiv = (fr, en) => `<div data-l="fr">${fr}</div>\n<div data-l="en">${en}</div>`;
+// data-nosnippet : Google ne reprend pas la langue masquée dans ses extraits (main.js le déplace si la page est en anglais).
+const bi = (fr, en) => `<span data-l="fr">${fr}</span><span data-l="en" data-nosnippet>${en}</span>`;
+const biDiv = (fr, en) => `<div data-l="fr">${fr}</div>\n<div data-l="en" data-nosnippet>${en}</div>`;
 const dateTxt = (d, l) => new Date(d + "T12:00:00Z").toLocaleDateString(l === "fr" ? "fr-FR" : "en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
 
 function inl(s) {
@@ -110,10 +111,11 @@ ${formNewsletter()}
 </dialog>
 `;
 
-function layout({ titre, desc, nav, main, cls = "" }) {
+function layout({ titre, desc, descEn, nav, main, cls = "", jsonld = "" }) {
   const t1 = titre ? `${esc(titre[0])} · ${NOM}` : NOM, t2 = titre ? `${esc(titre[1])} · ${NOM}` : NOM;
   const lien = (h, id, l) => `<a href="${h}"${nav === id ? ' aria-current="page"' : ""}>${l}</a>`;
   const d = esc(desc || "Sorcières Mortelles, journal d’art : interviews et articles d’artistes.");
+  const dEn = esc(descEn || "Sorcières Mortelles, art journal: interviews and articles about artists.");
   return `<!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -123,13 +125,15 @@ function layout({ titre, desc, nav, main, cls = "" }) {
 <meta name="description" content="${d}">
 <meta property="og:title" content="${t1}">
 <meta property="og:description" content="${d}">
-${CFG.url ? `<meta property="og:image" content="${CFG.url}/img/logo-partage.jpg?v=${V.partage}">\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="1200">\n<meta name="twitter:card" content="summary">\n` : ""}<link rel="icon" href="/img/maluha.png">
+${CFG.url ? `<meta property="og:image" content="${CFG.url}/img/logo-partage.jpg?v=${V.partage}">\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="1200">\n<meta name="twitter:card" content="summary">\n` : ""}<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/img/favicon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">${jsonld ? `\n<script type="application/ld+json">${jsonld}</script>` : ""}
 ${CFG.mastodon ? `<link rel="me" href="${esc(CFG.mastodon)}">\n` : ""}<link rel="alternate" type="application/rss+xml" title="${NOM} (français)" href="/rss.xml">
 <link rel="alternate" type="application/rss+xml" title="${NOM} (English)" href="/rss-en.xml">
 <link rel="stylesheet" href="/css/style.css?v=${V.css}">
 <script>(function(){var l=(location.search.match(/[?&]lang=(fr|en)(?:&|$)/)||[])[1];try{if(l)localStorage.setItem("sm-lang",l);else l=localStorage.getItem("sm-lang");if(localStorage.getItem("sm-police")==="lisible")document.documentElement.classList.add("lisible")}catch(e){}if(l==="en")document.documentElement.lang="en"})()</script>
 </head>
-<body data-t-fr="${t1}" data-t-en="${t2}">
+<body data-t-fr="${t1}" data-t-en="${t2}" data-d-fr="${d}" data-d-en="${dEn}">
 <div class="page">
 <header>
 <img class="logo" alt="Sorcières Mortelles" src="/img/logo.png" width="384" height="384">
@@ -175,6 +179,10 @@ fs.cpSync(path.join(ROOT, "static"), OUT, { recursive: true });
 const news = tous.slice(0, 5).map(p => `<li><a href="${url(p)}">${bi(esc(p.fr.titre), esc(tEn(p).titre))}</a><br><span class="ph">${meta(p)}</span></li>`).join("\n");
 ecrire("index.html", layout({
   nav: "accueil",
+  desc: "Toustes des Sorcières, Toustes des Artistes. Dans ces bois vous trouverez l’art beau, l’art perdu, l’art qui vous trouve, l’art qui dérange. Interviews et articles d’artistes.",
+  descEn: "All of Us Witches, All of Us Artists. In these woods you will find art that is beautiful, art that is lost, art that finds you, art that disturbs. Interviews and articles about artists.",
+  // Nom du site affiché par Google au lieu du nom de domaine
+  jsonld: CFG.url ? JSON.stringify({ "@context": "https://schema.org", "@type": "WebSite", name: NOM, alternateName: "Sorcieres Mortelles", url: CFG.url + "/" }) : "",
   main: `<section class="accueil">
 <h2>${bi("Toustes des Sorcières, Toustes des Artistes", "All of Us Witches, All of Us Artists")}</h2>
 <p>${bi("Dans ces bois vous trouverez l’art beau, l’art perdu, l’art qui vous trouve, l’art qui dérange, l’art qui questionne, l’art qui répond, l’art qui frissonne, l’art qui explose, l’art pour les humains, et les autres.",
@@ -204,7 +212,7 @@ ${li ? `<ul class="liste">\n${li}\n</ul>` : `<p>${bi("Les premières publication
     const cFr = corps(p.fr.corps);
     const cEn = p.en ? corps(p.en.corps) : `<p class="meta">This text is only available in French.</p>\n${cFr}`;
     ecrire(`${type}/${p.slug}/index.html`, layout({
-      titre: [p.fr.titre, tEn(p).titre], desc: p.fr.resume, nav: type, cls: "seul",
+      titre: [p.fr.titre, tEn(p).titre], desc: p.fr.resume, descEn: tEn(p).resume, nav: type, cls: "seul",
       main: `<article class="panneau"${st ? ` style="${st}"` : ""}>
 <a class="retour" href="/${type}/">${bi(T.retFr, T.retEn)}</a>
 <div class="fiche">
