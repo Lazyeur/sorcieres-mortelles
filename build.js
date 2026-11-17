@@ -135,7 +135,7 @@ ${CFG.mastodon ? `<link rel="me" href="${esc(CFG.mastodon)}">\n` : ""}<link rel=
 <img class="logo" alt="Sorcières Mortelles" src="/img/logo.png" width="384" height="384">
 <h1><a href="/">SORCIÈRES MORTELLES</a></h1>
 </header>
-<nav id="menu" data-aria-fr="Navigation principale" data-aria-en="Main navigation">${lien("/", "accueil", bi("ACCUEIL", "HOME"))}${lien("/interview/", "interview", "INTERVIEWS")}${lien("/article/", "article", "ARTICLES")}${lien("/contact/", "contact", "CONTACT")}<div class="outils"><div class="langues" role="group" id="langues"><button type="button" data-lang-btn="fr" lang="fr" title="Français">FR</button><span aria-hidden="true">/</span><button type="button" data-lang-btn="en" lang="en" title="English">EN</button></div><button type="button" id="police" class="police" aria-pressed="false" data-title-fr="Police adaptée à la dyslexie" data-title-en="Dyslexia-friendly font" title="Police adaptée à la dyslexie"><span aria-hidden="true">Aa</span><span class="vh">${bi("Police adaptée à la dyslexie", "Dyslexia-friendly font")}</span></button></div></nav>
+<nav id="menu" data-aria-fr="Navigation principale" data-aria-en="Main navigation">${lien("/", "accueil", bi("ACCUEIL", "HOME"))}${lien("/interview/", "interview", "INTERVIEWS")}${lien("/article/", "article", "ARTICLES")}${lien("/social/", "social", "SOCIAL")}${lien("/contact/", "contact", "CONTACT")}<div class="outils"><div class="langues" role="group" id="langues"><button type="button" data-lang-btn="fr" lang="fr" title="Français">FR</button><span aria-hidden="true">/</span><button type="button" data-lang-btn="en" lang="en" title="English">EN</button></div><button type="button" id="police" class="police" aria-pressed="false" data-title-fr="Police adaptée à la dyslexie" data-title-en="Dyslexia-friendly font" title="Police adaptée à la dyslexie"><span aria-hidden="true">Aa</span><span class="vh">${bi("Police adaptée à la dyslexie", "Dyslexia-friendly font")}</span></button></div></nav>
 <main class="${cls}">
 ${main}
 </main>
@@ -342,6 +342,41 @@ ${adr("rss-en.xml")}
 <h3>And then?</h3>
 <p>This trail does not only lead here. The artists, journals and notebooks you love often have their own: simply give their address to your grimoire, it will usually find it. Little by little, you will grow your own forest, far from the big platforms.</p>
 <blockquote>All of Us Witches, All of Us Artists.<br>And to each their own trail.</blockquote>`)}
+</div>
+</section>` }));
+
+// ---------- les forêts voisines (/social/) ----------
+// Sites et artistes amis, lus dans content/social.md (mode d'emploi en tête de ce fichier).
+function voisines() {
+  const f = path.join(ROOT, "content", "social.md");
+  if (!fs.existsSync(f)) return [];
+  return fs.readFileSync(f, "utf8").replace(/^﻿/, "").split(/\r?\n/).filter(l => !l.trim().startsWith("#")).join("\n")
+    .split(/\n\s*\n/).map(b => b.trim()).filter(Boolean).map(b => {
+      const v = { liens: [] };
+      b.split("\n").forEach(l => { const i = l.indexOf(":"); if (i < 1) return;
+        const k = l.slice(0, i).trim().toLowerCase(), x = l.slice(i + 1).trim();
+        if (k === "lien") { if (/^https?:\/\//.test(x)) v.liens.push(x); } else v[k] = x; });
+      if (!v.nom || !v.liens.length) throw new Error(`content/social.md : chaque voisine doit avoir "nom" et "lien" (bloc : ${b.split("\n")[0]})`);
+      return v;
+    });
+}
+const etiquette = u => u.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
+const carte = v => `<li>
+<a class="t" href="${esc(v.liens[0])}" rel="noopener">${esc(v.nom)}</a>
+${v.fr || v.en ? `<p>${bi(inl(v.fr || v.en), inl(v.en || v.fr))}</p>\n` : ""}<p class="voisine-liens">${v.liens.map(u => `<a href="${esc(u)}" rel="noopener">${esc(etiquette(u))}</a>`).join(" · ")}</p>
+</li>`;
+const VOISINES = voisines();
+const groupe = (fr, en, l) => l.length ? `<h3>${bi(fr, en)}</h3>\n<ul class="liste voisines">\n${l.map(carte).join("\n")}\n</ul>\n` : "";
+ecrire("social/index.html", layout({ titre: ["Les forêts voisines", "Neighbouring Woods"], nav: "social", cls: "seul",
+  desc: "Les sorcières des forêts voisines : sites et artistes amis de Sorcières Mortelles.",
+  main: `<section class="panneau">
+<div class="fiche">
+<h2 class="page-titre">${bi("Les forêts voisines", "Neighbouring Woods")}</h2>
+<p>${bi("Vous trouverez ici les sorcières des forêts voisines !", "Here you will find the witches of the neighbouring woods!")}</p>
+${VOISINES.length
+  ? groupe("Artistes", "Artists", VOISINES.filter(v => !/^site/i.test(v.type || ""))) + groupe("Sites & collectifs", "Sites & collectives", VOISINES.filter(v => /^site/i.test(v.type || "")))
+  : `<p class="meta">${bi("La carte se dessine encore : les premières voisines arrivent bientôt.", "The map is still being drawn: the first neighbours are coming soon.")}</p>\n`}<blockquote>${bi("Si vos bois sont proches, n’hésitez pas à <a href=\"/contact/\">nous contacter</a> : nous vous rajouterons à la carte avec plaisir.",
+  "If your woods are nearby, don’t hesitate to <a href=\"/contact/\">get in touch</a>: we will gladly add you to the map.")}</blockquote>
 </div>
 </section>` }));
 
