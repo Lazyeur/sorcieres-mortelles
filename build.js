@@ -136,8 +136,7 @@ ${CFG.mastodon ? `<link rel="me" href="${esc(CFG.mastodon)}">\n` : ""}<link rel=
 <body data-t-fr="${t1}" data-t-en="${t2}" data-d-fr="${d}" data-d-en="${dEn}">
 <div class="page">
 <header>
-<img class="logo" alt="Sorcières Mortelles" src="/img/logo.png" width="384" height="384">
-<h1><a href="/">SORCIÈRES MORTELLES</a></h1>
+<h1><a href="/"><img class="banniere" alt="Sorcières Mortelles" src="/img/banniere.jpg" srcset="/img/banniere.jpg 1000w, /img/banniere-2000.jpg 2000w" sizes="(min-width:1250px) 1250px, 100vw" width="1000" height="142"></a></h1>
 </header>
 <nav id="menu" data-aria-fr="Navigation principale" data-aria-en="Main navigation">${lien("/", "accueil", bi("ACCUEIL", "HOME"))}${lien("/interview/", "interview", "INTERVIEWS")}${lien("/article/", "article", "ARTICLES")}${lien("/social/", "social", "SOCIAL")}${lien("/contact/", "contact", "CONTACT")}<div class="outils"><div class="langues" role="group" id="langues"><button type="button" data-lang-btn="fr" lang="fr" title="Français">FR</button><span aria-hidden="true">/</span><button type="button" data-lang-btn="en" lang="en" title="English">EN</button></div><button type="button" id="police" class="police" aria-pressed="false" data-title-fr="Police adaptée à la dyslexie" data-title-en="Dyslexia-friendly font" title="Police adaptée à la dyslexie"><span aria-hidden="true">Aa</span><span class="vh">${bi("Police adaptée à la dyslexie", "Dyslexia-friendly font")}</span></button></div></nav>
 <main class="${cls}">
