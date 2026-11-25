@@ -2,6 +2,8 @@
 titre: Starwolf: A Band Out of Time
 resume: Brazilian disco, a couple dozen choruses and a joke photo that got out of hand: Max tells us about Copacabana.
 ---
+*This interview was conducted in English: you are reading the original version.*
+
 ![The three members of Starwolf talking in a turquoise room with a checkered floor](/img/starwolf-groupe.jpg "Starwolf. © Starwolf")
 
 Q: Let’s start with the title: your music gets a little closer to Brazil with every project, and this album is literally called *Copacabana*. Where does this connection with Brazilian music come from?

@@ -4,6 +4,8 @@ artiste: SAB
 date: 2026-11-26
 resume: Disco brésilienne, deux douzaines de refrains et une fausse photo qui a dérapé : Max nous raconte Copacabana.
 ---
+*Cette interview a été réalisée en anglais. La version originale est à lire en passant le site en anglais.*
+
 ![Les trois membres de Starwolf en pleine discussion dans une pièce turquoise au sol en damier](/img/starwolf-groupe.jpg "Starwolf. © Starwolf")
 
 Q: Commençons par le titre : votre musique se rapproche un peu plus du Brésil à chaque projet, et cet album s’appelle carrément *Copacabana*. D’où vient ce lien avec la musique brésilienne ?
